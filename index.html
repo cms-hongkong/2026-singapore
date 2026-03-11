@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Travel Master v63 - Singapore Full Itinerary</title>
+    <title>Travel Master v63 - Singapore Ultimate Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
@@ -72,16 +72,16 @@
 </head>
 <body>
 
-<button id="forceReset" onclick="if(confirm('確定清除所有數據並恢復預設裝備清單？')){localStorage.clear(); window.location.reload();}">⚠️ 強制重設</button>
+<button id="forceReset" onclick="if(confirm('確定清除所有數據並恢復預設清單？')){localStorage.clear(); window.location.reload();}">⚠️ 強制重設</button>
 
 <div id="app" v-cloak>
     <div v-if="!isInitialized" class="wizard-overlay">
         <div class="wizard-content">
             <i class="fa-solid fa-plane-departure" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2>Singapore Travel Master</h2>
-            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">已預載 4月4日-4月8日 新加坡終極行程與詳細行李清單</p>
+            <h2>Travel Master Pro v63</h2>
+            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">已預載新加坡終極行程及 8 大類行李清單</p>
             <span class="wizard-label">目的地城市</span>
-            <input v-model="config.dest" class="wizard-input">
+            <input v-model="config.dest" class="wizard-input" placeholder="例如: Singapore">
             <span class="wizard-label">出發日期</span>
             <input type="date" v-model="config.startDate" class="wizard-input">
             <span class="wizard-label">回程日期</span>
@@ -164,24 +164,13 @@
             <div style="font-size: 12px; opacity: 0.8;">全旅程預算總支出</div>
             <div style="font-size: 32px; font-weight: 800;">HKD ${{ grandTotalHKD }}</div>
         </div>
+        
         <h4 style="margin: 20px 0 10px 15px;">📊 結算報告</h4>
         <div class="card" style="padding: 10px;">
             <div v-if="safeSettleReport.length === 0" style="text-align:center; padding:20px; color:var(--secondary);">✅ 帳目已清</div>
             <div v-for="res in safeSettleReport" style="display:flex; justify-content:space-between; align-items:center; padding: 12px; border-bottom: 1px solid var(--divider);">
                 <span><b>{{ res.from }}</b> ➡️ <b>{{ res.to }}</b></span>
                 <span style="color:var(--primary); font-weight:bold;">HKD ${{ res.amount }}</span>
-            </div>
-        </div>
-        <h4 style="margin: 25px 0 10px 15px;">🧾 每日支出明細</h4>
-        <div v-for="(day, idx) in days" :key="'cost-day-'+idx">
-            <div v-if="hasValidExpenses(idx)" class="card" style="padding:15px; margin-bottom: 10px;">
-                <div style="font-weight: 700; color: var(--primary); border-bottom: 1px solid var(--divider); padding-bottom: 5px; margin-bottom: 10px;">Day {{ idx + 1 }} ({{ getDayDate(idx) }})</div>
-                <div v-for="ev in day.events" :key="'ev-line-'+ev.id">
-                    <div v-if="parseFloat(ev.cost || 0) > 0" style="display:flex; justify-content:space-between; font-size: 14px; margin-bottom: 8px;">
-                        <span>{{ ev.title }} ({{ ev.paidBy || '我' }})</span>
-                        <span style="font-weight:bold; color:var(--accent);">${{ safeConvertToHKD(ev.cost, ev.currency) }}</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -220,16 +209,20 @@
         <div class="modal-body">
             <h3>行程詳情</h3>
             <div class="icon-grid">
-                <div v-for="c in categories" :key="c.id" class="icon-opt" :class="{ 'selected': form.category === c.id }" @click="form.category = c.id"><i :class="c.icon"></i></div>
+                <div v-for="c in categories" :key="c.id" 
+                     class="icon-opt" :class="{ 'selected': form.category === c.id }" 
+                     @click="form.category = c.id">
+                    <i :class="c.icon"></i>
+                </div>
             </div>
+
             <input v-model="form.title" placeholder="景點名稱">
             <div style="display:flex; gap:10px;">
                 <div style="flex:1"><label style="font-size:10px;">時間</label><input type="time" v-model="form.time"></div>
                 <div style="flex:1"><label style="font-size:10px;">停留(分)</label><input type="number" v-model="form.duration"></div>
             </div>
             <input type="number" v-model="form.transTime" placeholder="交通至下站 (分鐘)">
-            <input v-model="form.url" placeholder="網址連結">
-            <textarea v-model="form.note" placeholder="詳細備註..."></textarea>
+            <textarea v-model="form.note" placeholder="備註..."></textarea>
 
             <label style="font-size:10px;">費用與分帳</label>
             <div style="background:var(--bg); padding:10px; border-radius:10px; margin-bottom:10px;">
@@ -268,8 +261,8 @@
 
     const { createApp, ref: vRef, onMounted, computed, watch } = Vue;
 
-    // 行李清單預載
-    const PRELOADED_PACKING = [
+    // 完整的 8 大類裝備清單數據
+    const MASTER_PACKING_LIST = [
         { cat: "1. 重要文件與財物", items: ["錢包 (本地 / 外幣)", "信用卡", "身分證", "護照 / 簽證", "駕駛執照 (本地 / 國際)", "旅遊保險", "行程表", "登機證", "酒店預約確認", "住址證明", "藥物過敏紀錄", "SIM 卡", "海外提款功能"] },
         { cat: "2. 攝影器材", items: ["FIMI 雲台相機 (含充電器、腳架、收音咪)", "Insta360 全景相機 (含充電器、電池、自拍棒、腳架、轉接器、收音咪)", "航拍機"] },
         { cat: "3. 電子產品", items: ["手機", "手機充電器", "iPad 及充電器", "手提電腦及充電器", "AirPods", "行動電源 (尿袋)", "萬用轉換插頭", "拖板", "手機腳架 / 手機架"] },
@@ -280,61 +273,51 @@
         { cat: "8. 其他生活用品", items: ["雨傘", "電熱水壺", "行李秤", "掛頸繩", "零食"] }
     ];
 
-    // --- 新加坡完整預載數據 ---
-    const SINGAPORE_ITINERARY_DATA = [
-        { // 第一日
-            city: "Singapore", startTime: "09:05",
-            events: [
-                { id: 101, title: "飛機 SQ 899 (HKG -> SIN)", time: "09:05", duration: 230, transTime: 30, category: "flight", note: "09:05 香港起飛，12:55 抵達新加坡" },
-                { id: 102, title: "星耀樟宜 Jewel 探索", time: "12:55", duration: 150, transTime: 40, category: "attraction", note: "1. 雨漩窩 (Rain Vortex)\n2. 森林谷 (Forest Valley)\n3. 5樓 Canopy Park 星空花園" },
-                { id: 103, title: "酒店 Check-in (宜必思酒店)", time: "16:05", duration: 60, transTime: 20, category: "hotel", note: "入住：新加坡明古連街宜必思酒店 (Ibis Singapore on Bencoolen)\n地址：170 Bencoolen St, Singapore 189657" },
-                { id: 104, title: "牛車水 (Chinatown) 文化遊", time: "17:25", duration: 120, transTime: 15, category: "attraction", note: "漫步南洋街巷，參觀佛牙寺 (開到18:00)" },
-                { id: 105, title: "晚餐 @ 詠春園 (Spring Court)", time: "19:00", duration: 120, transTime: 0, category: "food", note: "經典懷舊中餐" }
-            ]
-        },
-        { // 第二日
-            city: "Singapore", startTime: "09:30",
-            events: [
-                { id: 201, title: "小印度 (Little India) 色彩之旅", time: "09:30", duration: 120, transTime: 20, category: "attraction", note: "漫步香料街區，竹腳中心 (Tekka Centre)" },
-                { id: 202, title: "甘幫格南 + 蘇丹回教堂", time: "11:50", duration: 130, transTime: 10, category: "attraction", note: "參觀蘇丹回教堂，午餐推薦 Zam Zam 印度煎餅" },
-                { id: 203, title: "哈芝巷 (Haji Lane) 文青打卡", time: "14:10", duration: 80, transTime: 30, category: "attraction", note: "五彩壁畫、文青小店" },
-                { id: 204, title: "自由活動 / 酒店休息", time: "16:00", duration: 90, transTime: 30, category: "hotel", note: "返回宜必思酒店稍作休息" },
-                { id: 205, title: "克拉碼頭 (Clarke Quay) 晚餐", time: "18:00", duration: 150, transTime: 0, category: "food", note: "河畔漫步賞日落及享用晚餐" }
-            ]
-        },
-        { // 第三日
-            city: "Singapore", startTime: "09:30",
-            events: [
-                { id: 301, title: "Skyline Luge 斜坡滑車", time: "09:30", duration: 180, transTime: 15, category: "attraction", note: "聖淘沙島。建議買4次套票。" },
-                { id: 302, title: "午餐 @ 聖淘沙名勝世界", time: "12:45", duration: 60, transTime: 15, category: "food", note: "馬來西亞美食街" },
-                { id: 303, title: "新加坡環球影城 (USS)", time: "13:45", duration: 315, transTime: 20, category: "attraction", note: "週一玩到 19:00。必玩：變形金剛、古埃及、侏羅紀。" },
-                { id: 304, title: "晚餐 @ Vivo City", time: "19:20", duration: 100, transTime: 0, category: "food", note: "搭捷運返怡豐城晚餐" }
-            ]
-        },
-        { // 第四日
-            city: "Singapore", startTime: "09:30",
-            events: [
-                { id: 401, title: "雲霧林 (Jurassic World 體驗)", time: "09:30", duration: 180, transTime: 15, category: "attraction", note: "打卡貼士：水霧時間 10:00 / 12:00 影相最靚。" },
-                { id: 402, title: "午餐 @ 園區或金沙", time: "12:45", duration: 75, transTime: 15, category: "food" },
-                { id: 403, title: "花穹 (Flower Dome)", time: "14:15", duration: 120, transTime: 15, category: "attraction" },
-                { id: 404, title: "超級樹 + OCBC Skyway", time: "16:30", duration: 90, transTime: 20, category: "attraction", note: "漫步空中走廊" },
-                { id: 405, title: "魚尾獅公園 Merlion Park", time: "18:20", duration: 90, transTime: 15, category: "attraction", note: "影經典「接水」相" },
-                { id: 406, title: "快速晚餐", time: "20:05", duration: 40, transTime: 0, category: "food" },
-                { id: 407, title: "超級樹燈光秀 (Garden Rhapsody)", time: "20:45", duration: 30, transTime: 15, category: "attraction", note: "躺喺草坪睇騷" },
-                { id: 408, title: "金沙燈光水舞秀 (Spectra)", time: "21:30", duration: 30, transTime: 0, category: "attraction" }
-            ]
-        },
-        { // 第五日
-            city: "Singapore", startTime: "09:00",
-            events: [
-                { id: 501, title: "福康寧公園 (龍之穴樹洞)", time: "09:00", duration: 90, transTime: 20, category: "attraction" },
-                { id: 502, title: "國家美術館 / 亞美尼亞街", time: "10:50", duration: 90, transTime: 20, category: "attraction" },
-                { id: 503, title: "烏節路購物 + 紐頓午餐", time: "12:40", duration: 90, transTime: 20, category: "shopping" },
-                { id: 504, title: "前往機場 / 星耀樟宜補完", time: "14:30", duration: 120, transTime: 20, category: "transport", note: "買手信：Bengawan Solo 斑蘭蛋糕、IRVINS 鹹蛋魚皮" },
-                { id: 505, title: "樟宜機場主題花園 (T2/T3)", time: "16:50", duration: 90, transTime: 40, category: "attraction", note: "T2 夢幻花園、T3 蝴蝶園" },
-                { id: 506, title: "起飛返港 (SQ 898)", time: "19:00", duration: 240, transTime: 0, category: "flight", note: "23:00 抵港" }
-            ]
-        }
+    // 新加坡終極行程數據 (優化時間與餐飲)
+    const SINGAPORE_MASTER_DATA = [
+        { city: "Singapore", startTime: "09:05", events: [
+            { id:101, title:"飛機 SQ 899 (HKG->SIN)", time:"09:05", duration:230, transTime:30, category:"flight", note:"香港起飛" },
+            { id:102, title:"星耀樟宜 Jewel + 午餐", time:"13:25", duration:150, transTime:40, category:"attraction", note:"打卡瀑布、Canopy Park" },
+            { id:103, title:"新加坡明古連街宜必思酒店 (入住)", time:"16:35", duration:60, transTime:20, category:"hotel" },
+            { id:104, title:"牛車水 (Chinatown) + 佛牙寺", time:"17:55", duration:90, transTime:15, category:"attraction" },
+            { id:105, title:"懷舊晚餐 @ 詠春園", time:"19:40", duration:120, transTime:20, category:"food" },
+            { id:106, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"21:40", duration:60, transTime:0, category:"hotel" }
+        ]},
+        { city: "Singapore", startTime: "08:30", events: [
+            { id:201, title:"由酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
+            { id:202, title:"小印度 色彩之旅", time:"09:50", duration:120, transTime:15, category:"attraction" },
+            { id:203, title:"甘榜格南 + 午餐 (Zam Zam)", time:"12:05", duration:120, transTime:10, category:"attraction" },
+            { id:204, title:"哈芝巷 文青打卡", time:"14:15", duration:90, transTime:30, category:"attraction" },
+            { id:205, title:"克拉碼頭 (日落) + 晚餐", time:"17:15", duration:150, transTime:20, category:"food" },
+            { id:206, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"20:45", duration:60, transTime:0, category:"hotel" }
+        ]},
+        { city: "Singapore", startTime: "08:00", events: [
+            { id:301, title:"由酒店出發 + 早餐", time:"08:00", duration:60, transTime:40, category:"transport" },
+            { id:302, title:"聖淘沙 Skyline Luge 滑車", time:"10:00", duration:150, transTime:15, category:"attraction", note:"10:00開門" },
+            { id:303, title:"午餐 @ 聖淘沙名勝世界", time:"12:45", duration:60, transTime:15, category:"food" },
+            { id:304, title:"新加坡環球影城 (USS)", time:"14:00", duration:300, transTime:20, category:"attraction", note:"玩到19:00" },
+            { id:305, title:"晚餐 @ Vivo City", time:"19:20", duration:120, transTime:30, category:"food" },
+            { id:306, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"21:30", duration:60, transTime:0, category:"hotel" }
+        ]},
+        { city: "Singapore", startTime: "08:30", events: [
+            { id:401, title:"由酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
+            { id:402, title:"雲霧林 (機械恐龍體驗)", time:"09:50", duration:150, transTime:15, category:"attraction", note:"10:00水霧" },
+            { id:403, title:"午餐 @ 金沙美食廣場", time:"12:35", duration:75, transTime:15, category:"food" },
+            { id:404, title:"花穹 + 超級樹步道", time:"14:05", duration:150, transTime:20, category:"attraction" },
+            { id:405, title:"魚尾獅公園 (影接水相)", time:"17:15", duration:90, transTime:20, category:"attraction" },
+            { id:406, title:"濱海灣晚餐", time:"19:05", duration:90, transTime:15, category:"food" },
+            { id:407, title:"超級樹燈光秀 (20:45)", time:"20:50", duration:30, transTime:15, category:"attraction" },
+            { id:408, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"21:35", duration:60, transTime:0, category:"hotel" }
+        ]},
+        { city: "Singapore", startTime: "08:00", events: [
+            { id:501, title:"由酒店出發 + 早餐", time:"08:00", duration:60, transTime:20, category:"transport" },
+            { id:502, title:"福康寧公園 (龍之穴)", time:"09:20", duration:90, transTime:20, category:"attraction" },
+            { id:503, title:"烏節路購物 + 午餐", time:"11:30", duration:120, transTime:30, category:"shopping" },
+            { id:504, title:"Bugis 最後採購 (酒店旁)", time:"14:00", duration:60, transTime:20, category:"shopping" },
+            { id:505, title:"抵達機場 / 星耀樟宜補完", time: "15:20", duration:120, transTime:20, category:"transport" },
+            { id:506, title:"樟宜機場主題花園", time: "17:40", duration:60, transTime:20, category:"attraction" },
+            { id:507, title:"起飛返港 (SQ 898)", time: "19:00", duration:240, transTime:0, category:"flight" }
+        ]}
     ];
 
     createApp({
@@ -343,7 +326,7 @@
             const isInitialized = vRef(false);
             const view = vRef('plan');
             const days = vRef([]);
-            const config = vRef({ dest: 'Singapore', startDate: '2026-04-04', endDate: '2026-04-08', currency: 'HKD' });
+            const config = vRef({ dest: 'Singapore', startDate: '2025-04-04', endDate: '2025-04-08', currency: 'HKD' });
             const members = vRef(['我']);
             const packingList = vRef([]);
             const currentDayIdx = vRef(0);
@@ -382,22 +365,18 @@
             });
 
             const finishWizard = () => {
-                if(!config.value.dest || !config.value.startDate) return alert("請填寫城市與日期");
-                
-                // 行李清單全面注入
                 const prePack = []; 
-                PRELOADED_PACKING.forEach(g => {
+                MASTER_PACKING_LIST.forEach(g => {
                     g.items.forEach(it => {
                         prePack.push({ id: Math.random(), category: g.cat, text: it, done: false });
                     });
                 });
                 
-                // 行程與配置注入
-                days.value = SINGAPORE_ITINERARY_DATA;
+                days.value = SINGAPORE_MASTER_DATA;
                 packingList.value = prePack;
                 
                 set(configRef, config.value);
-                set(planRef, SINGAPORE_ITINERARY_DATA);
+                set(planRef, SINGAPORE_MASTER_DATA);
                 set(memberRef, members.value);
                 set(packRef, prePack);
                 isInitialized.value = true;
