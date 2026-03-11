@@ -1,2344 +1,433 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英國17天行程｜旅遊編輯與分享</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Travel Master v63 - Singapore Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-        }
-        
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 30px 0;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 30px;
-        }
-        
-        .trip-title {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-        
-        .trip-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-primary {
-            background-color: #ff7e5f;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #ff6b4a;
-            transform: translateY(-3px);
-        }
-        
-        .btn-secondary {
-            background-color: white;
-            color: #2a5298;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-3px);
-        }
-        
-        .btn-edit {
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-edit:hover {
-            background-color: #3d8b40;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-            position: relative;
-        }
-        
-        .card-title {
-            color: #1e3c72;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f5ff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        
-        .card-title i {
-            color: #ff7e5f;
-        }
-        
-        .edit-icon {
-            cursor: pointer;
-            color: #666;
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-        
-        .edit-icon:hover {
-            color: #2a5298;
-        }
-        
-        .trip-overview {
-            grid-column: 1 / -1;
-        }
-        
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-        
-        .overview-item {
-            background-color: #f8faff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #2a5298;
-            position: relative;
-        }
-        
-        .editable {
-            min-height: 24px;
-            padding: 2px 4px;
-            border: 1px dashed transparent;
-            border-radius: 3px;
-            transition: all 0.3s;
-        }
-        
-        .editable:hover {
-            background-color: #f0f7ff;
-            border-color: #a0c1ff;
-        }
-        
-        .editable:focus {
-            outline: none;
-            border: 1px solid #2a5298;
-            background-color: #fff;
-        }
-        
-        .overview-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .overview-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1e3c72;
-        }
-        
-        .day-card {
-            margin-bottom: 20px;
-            border-left: 5px solid #ff7e5f;
-        }
-        
-        .day-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .day-title {
-            font-size: 1.3rem;
-            color: #1e3c72;
-        }
-        
-        .day-theme {
-            background-color: #e6f0ff;
-            color: #2a5298;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        
-        .activity-list {
-            list-style-type: none;
-        }
-        
-        .activity-item {
-            padding: 10px 0;
-            border-bottom: 1px dashed #eee;
-            display: flex;
-            align-items: flex-start;
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-time {
-            min-width: 80px;
-            font-weight: 600;
-            color: #ff7e5f;
-        }
-        
-        .activity-desc {
-            flex: 1;
-        }
-        
-        .cost-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        .cost-table th, .cost-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .cost-table th {
-            background-color: #f0f5ff;
-            color: #1e3c72;
-            font-weight: 600;
-        }
-        
-        .cost-table tr:last-child td {
-            border-bottom: 2px solid #2a5298;
-            font-weight: 700;
-        }
-        
-        .budget-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f0f7ff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        
-        .budget-total-label {
-            font-size: 1.1rem;
-            color: #1e3c72;
-            font-weight: 600;
-        }
-        
-        .budget-total-value {
-            font-size: 1.8rem;
-            color: #ff7e5f;
-            font-weight: 700;
-        }
-        
-        .flight-details {
-            background-color: #f8faff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        
-        .flight-leg {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #ddd;
-        }
-        
-        .flight-leg:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        
-        .flight-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .flight-route {
-            font-weight: 600;
-            color: #1e3c72;
-            margin-bottom: 5px;
-        }
-        
-        .flight-time {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .flight-number {
-            background-color: #e6f0ff;
-            color: #2a5298;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            align-self: flex-start;
-        }
-        
-        .map-container {
-            height: 300px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-style: italic;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 0.9rem;
-            border-top: 1px solid #eee;
-            margin-top: 40px;
-        }
-        
-        .share-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            color: #1e3c72;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #666;
-            cursor: pointer;
-        }
-        
-        .share-options {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        
-        .share-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .share-btn:hover {
-            transform: translateY(-5px);
-        }
-        
-        .share-facebook {
-            background-color: #3b5998;
-        }
-        
-        .share-whatsapp {
-            background-color: #25D366;
-        }
-        
-        .share-link {
-            background-color: #2a5298;
-        }
-        
-        .link-container {
-            display: flex;
-            margin-top: 20px;
-        }
-        
-        #shareable-link {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            font-size: 0.9rem;
-        }
-        
-        .copy-link {
-            background-color: #2a5298;
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-        }
-        
-        .weather-section {
-            grid-column: 1 / -1;
-        }
-        
-        .weather-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .weather-day {
-            background-color: #f8faff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-        
-        .weather-date {
-            font-weight: 600;
-            color: #1e3c72;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .weather-icon {
-            font-size: 2rem;
-            margin: 10px 0;
-            color: #ff7e5f;
-        }
-        
-        .weather-temp {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2a5298;
-        }
-        
-        .weather-desc {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .edit-mode {
-            border: 2px solid #4CAF50;
-        }
-        
-        .edit-controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-        
-        .data-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2a5298;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            z-index: 999;
-        }
-        
-        /* 打印樣式 */
+        :root { --primary: #4DB6AC; --primary-light: #E0F2F1; --bg: #F8F9F9; --card: #FFFFFF; --text: #2C3E50; --secondary: #95A5A6; --divider: #ECEFF1; --accent: #FF8A65; }
+        [v-cloak] { display: none; }
+        body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 150px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        
+        .wizard-overlay { position: fixed; inset: 0; background: var(--card); z-index: 5000; padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; }
+        .wizard-content { width: 100%; max-width: 350px; text-align: center; }
+        .wizard-label { display: block; text-align: left; font-size: 12px; font-weight: 800; color: var(--primary); margin-bottom: 5px; margin-top: 10px; }
+        .wizard-input { border: 1.5px solid var(--divider); border-radius: 12px; font-size: 16px; padding: 15px; width: 100%; box-sizing: border-box; margin-bottom: 10px; background: var(--bg); outline: none; }
+        .wizard-btn { background: var(--primary); color: white; padding: 18px; border-radius: 30px; border: none; font-size: 16px; font-weight: bold; width: 100%; max-width: 350px; cursor: pointer; margin-top: 20px; box-shadow: 0 8px 15px rgba(77,182,172,0.3); }
+
+        .header { background: var(--card); padding-top: 10px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--divider); }
+        .nav-switch { display: flex; padding: 10px 15px; gap: 5px; }
+        .nav-btn { flex: 1; border: none; padding: 10px 2px; border-radius: 8px; cursor: pointer; background: var(--bg); color: var(--secondary); font-weight: bold; font-size: 12px; transition: 0.3s; }
+        .nav-btn.active { background: var(--primary); color: white; }
+        .day-tabs-wrapper { display: flex; gap: 10px; overflow-x: auto; padding: 10px 15px; scrollbar-width: none; }
+        .day-tab { flex: 0 0 75px; display: flex; flex-direction: column; align-items: center; padding: 12px 0; border-radius: 15px; background: var(--bg); cursor: pointer; border: 1.5px solid transparent; }
+        .day-tab.active { background: var(--primary-light); border-color: var(--primary); }
+
+        .event-wrapper { margin-bottom: 15px; }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; margin: 0 15px; border: 1px solid var(--divider); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .event-card { display: flex; gap: 12px; align-items: flex-start; }
+        .handle { width: 42px; height: 42px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); cursor: grab; flex-shrink: 0; font-size: 20px; }
+        .card-main { flex: 1; min-width: 0; }
+        .card-title { font-weight: 700; font-size: 16px; color: var(--text); }
+        .card-meta { font-size: 11px; color: var(--secondary); display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+        .info-box { font-size: 12px; color: #546E7A; background: var(--bg); padding: 10px; border-radius: 10px; margin-top: 10px; white-space: pre-wrap; border-left: 3px solid var(--primary); }
+        .card-link { color: #2196F3; font-weight: 800; text-decoration: none; display: inline-block; margin-top: 5px; font-size: 11px; }
+        
+        .transport-divider { margin: 8px 0 0 65px; padding-bottom: 5px; font-size: 11px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .btn-transit { background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 10px; font-weight: bold; text-decoration: none; font-size: 10px; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal-body { background: var(--card); width: 100%; max-width: 420px; padding: 20px; border-radius: 25px; max-height: 90vh; overflow-y: auto; }
+        .icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+        .icon-opt { aspect-ratio: 1; border: 2px solid var(--divider); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: var(--secondary); transition: 0.2s; }
+        .icon-opt.selected { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; transform: scale(1.1); }
+        input, select, textarea { font-size: 16px; padding: 10px; width: 100%; box-sizing: border-box; border: 1.5px solid var(--divider); border-radius: 10px; margin-bottom: 12px; background: var(--bg); outline: none; }
+
+        .footer { position: fixed; bottom: 20px; left: 15px; right: 15px; display: flex; gap: 10px; z-index: 1000; }
+        .btn { flex: 1; padding: 16px; border-radius: 18px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(77,182,172,0.3); }
+        .btn-secondary { background: #5856D6; color: white; flex: 0.3; }
+        
+        #forceReset { position: fixed; bottom: 5px; right: 5px; z-index: 9999; background: #FF5252; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 9px; opacity: 0.5; }
+        .packing-category { font-size: 11px; font-weight: 800; color: var(--primary); margin: 20px 15px 5px 15px; border-left: 3px solid var(--primary); padding-left: 8px; text-transform: uppercase; }
+        .chip { display: inline-block; padding: 6px 14px; background: var(--bg); border-radius: 20px; font-size: 12px; margin: 3px; cursor: pointer; border: 1.5px solid transparent; transition: 0.2s; }
+        .chip.active { background: var(--primary-light); color: var(--primary); font-weight: bold; border-color: var(--primary); }
+
         @media print {
-            .action-buttons, .edit-icon, .share-modal, .notification, .data-status, .footer, .map-container {
-                display: none !important;
-            }
-            
-            .card {
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .day-card {
-                page-break-after: always !important;
-            }
-            
-            .container {
-                padding: 10px !important;
-            }
-        }
-        
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .action-buttons {
-                justify-content: center;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-            
-            .trip-title {
-                font-size: 1.8rem;
-            }
-            
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .day-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .weather-container {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-            
-            .action-buttons {
-                gap: 10px;
-            }
-            
-            .btn {
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
+            .header, .footer, #forceReset, .nav-switch, .fa-location-arrow, .btn-transit { display: none !important; }
+            .card { box-shadow: none !important; border: 1px solid #eee !important; break-inside: avoid; margin: 10px 0 !important; width: 100% !important; }
+            .handle { display: none !important; }
+            body { background: white; padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div>
-                    <h1 class="trip-title" id="tripTitle" contenteditable="true">英國17天行程</h1>
-                    <p class="trip-subtitle" id="tripSubtitle" contenteditable="true">2026年7月28日 - 8月13日</p>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-edit" id="toggleEditBtn">
-                        <i class="fas fa-edit"></i> 編輯模式
-                    </button>
-                    <button class="btn btn-primary" id="shareBtn">
-                        <i class="fas fa-share-alt"></i> 分享行程
-                    </button>
-                    <button class="btn btn-secondary" id="exportBtn">
-                        <i class="fas fa-file-pdf"></i> 導出PDF
-                    </button>
-                    <button class="btn btn-secondary" id="saveBtn">
-                        <i class="fas fa-save"></i> 保存
-                    </button>
-                </div>
-            </div>
-        </header>
-        
-        <div class="main-content">
-            <div class="card trip-overview">
-                <h2 class="card-title">
-                    <span><i class="fas fa-map-marked-alt"></i> 行程總覽</span>
-                    <i class="fas fa-edit edit-icon" id="editOverview"></i>
-                </h2>
-                <div class="overview-grid">
-                    <div class="overview-item">
-                        <div class="overview-label">旅行日期</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="tripDates">2026.07.28 - 08.13</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">天數</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="tripDays">17天16晚</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">人數</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="tripPeople">3人</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">主要交通</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="tripTransport">飛機 + 火車 + 自駕</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">路線</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="tripRoute">愛丁堡 → 蘇格蘭高地 → 格拉斯哥 → 湖區 → 利物浦 → 切斯特 → 曼徹斯特</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card weather-section">
-                <h2 class="card-title">
-                    <span><i class="fas fa-cloud-sun"></i> 天氣預報（英國夏季典型天氣）</span>
-                    <i class="fas fa-sync-alt edit-icon" id="refreshWeather"></i>
-                </h2>
-                <div class="weather-container" id="weatherContainer">
-                    <!-- 天氣預報將由JavaScript動態生成 -->
-                </div>
-                <p style="margin-top: 15px; font-size: 0.9rem; color: #666; text-align: center;">
-                    <i class="fas fa-info-circle"></i> 這是英國夏季典型天氣預測，實際天氣可能有所不同。夏季平均溫度：12-20°C，多雲偶有雨。
-                </p>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-plane-departure"></i> 去程航班</span>
-                    <i class="fas fa-edit edit-icon" id="editFlightOut"></i>
-                </h2>
-                <div class="flight-details">
-                    <div class="flight-leg">
-                        <div class="flight-info">
-                            <div class="flight-route editable" contenteditable="false" id="flightOutRoute1">香港 → 蘇黎世</div>
-                            <div class="flight-time editable" contenteditable="false" id="flightOutTime1">2026年7月28日 23:15 - 7月29日 06:15 (瑞士国际航空 LX139)</div>
-                            <span class="flight-number editable" contenteditable="false" id="flightOutClass1">經濟艙基礎票價</span>
-                        </div>
-                    </div>
-                    <div class="flight-leg">
-                        <div class="flight-info">
-                            <div class="flight-route editable" contenteditable="false" id="flightOutRoute2">蘇黎世 → 愛丁堡</div>
-                            <div class="flight-time editable" contenteditable="false" id="flightOutTime2">2026年7月29日 07:30 - 08:40 (雪绒花航空 LX8290)</div>
-                            <span class="flight-number editable" contenteditable="false" id="flightOutClass2">經濟艙基礎票價</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-plane-arrival"></i> 回程航班</span>
-                    <i class="fas fa-edit edit-icon" id="editFlightIn"></i>
-                </h2>
-                <div class="flight-details">
-                    <div class="flight-leg">
-                        <div class="flight-info">
-                            <div class="flight-route editable" contenteditable="false" id="flightInRoute1">曼徹斯特 → 蘇黎世</div>
-                            <div class="flight-time editable" contenteditable="false" id="flightInTime1">2026年8月12日 18:40 - 21:40 (瑞士国际航空 LX381)</div>
-                            <span class="flight-number editable" contenteditable="false" id="flightInClass1">經濟艙基礎Plus票價</span>
-                        </div>
-                    </div>
-                    <div class="flight-leg">
-                        <div class="flight-info">
-                            <div class="flight-route editable" contenteditable="false" id="flightInRoute2">蘇黎世 → 香港</div>
-                            <div class="flight-time editable" contenteditable="false" id="flightInTime2">2026年8月12日 22:40 - 8月13日 16:40 (瑞士国际航空 LX138)</div>
-                            <span class="flight-number editable" contenteditable="false" id="flightInClass2">經濟艙基礎Plus票價</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-calendar-alt"></i> 每日行程</span>
-                    <i class="fas fa-edit edit-icon" id="editItinerary"></i>
-                </h2>
-                
-                <!-- 第1天 -->
-                <div class="day-card card" id="day-1">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day1Title">第1天｜7月28日（週二）｜香港出發</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day1Theme">航班出發</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day1Time1">21:00前</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day1Desc1">抵達香港國際機場</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day1Time2">21:15-23:15</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day1Desc2">辦理登機手續</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day1Time3">23:15</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day1Desc3">航班LX139起飛（香港→蘇黎世）</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第2天 -->
-                <div class="day-card card" id="day-2">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day2Title">第2天｜7月29日（週三）｜愛丁堡抵達</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day2Theme">抵達與適應</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time1">06:15</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc1">抵達蘇黎世機場</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time2">07:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc2">航班LX8290起飛（蘇黎世→愛丁堡）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time3">08:40</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc3">抵達愛丁堡機場</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time4">09:00-09:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc4">機場→市區（Airlink 100巴士）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time5">10:00-18:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc5">老城徒步：Castlehill→維多利亞街→聖吉爾斯大教堂</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day2Time6">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day2Desc6">愛丁堡</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第3天 -->
-                <div class="day-card card" id="day-3">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day3Title">第3天｜7月30日（週四）｜愛丁堡城堡</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day3Theme">皇室地標與隱世村落</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day3Time1">09:00-12:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day3Desc1">愛丁堡城堡（需預約）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day3Time2">12:30-14:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day3Desc2">皇家遊艇不列顛尼亞號</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day3Time3">15:00-16:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day3Desc3">愛丁堡皇家植物園</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day3Time4">17:00-18:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day3Desc4">Dean Village</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day3Time5">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day3Desc5">愛丁堡</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第4-6天 -->
-                <div class="day-card card" id="day-4-6">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day4Title">第4-6天｜7月31日 - 8月2日（週五至日）｜高地與斯凱島三日團</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day4Theme">跟團行程</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day4Time1">第4天 (7/31)</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day4Desc1">愛丁堡→洛蒙德湖→格倫科峽谷→威廉堡→斯凱島</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day4Time2">第5天 (8/1)</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day4Desc2">斯凱島全日遊（波特里、The Storr、Kilt Rock、鄧韋根城堡）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day4Time3">第6天 (8/2)</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day4Desc3">艾琳多南城堡→尼斯湖→返回愛丁堡</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day4Time4">費用</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day4Desc4">£960總｜£320/人</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day4Time5">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day4Desc5">高地/斯凱島2晚，第6晚愛丁堡</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第7天 -->
-                <div class="day-card card" id="day-7">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day7Title">第7天｜8月3日（週一）｜愛丁堡藝術文化</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day7Theme">博物館與威士忌</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day7Time1">09:00-10:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day7Desc1">卡爾頓山（免費）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day7Time2">10:30-12:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day7Desc2">蘇格蘭國立博物館（免費）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day7Time3">13:30-15:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day7Desc3">蘇格蘭國家畫廊（免費）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day7Time4">15:30-16:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day7Desc4">蘇格蘭威士忌體驗中心</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day7Time5">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day7Desc5">愛丁堡</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第8天 -->
-                <div class="day-card card" id="day-8">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day8Title">第8天｜8月4日（週二）｜愛丁堡→格拉斯哥</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day8Theme">租車與城市核心</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day8Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day8Desc1">愛丁堡最後探索</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day8Time2">14:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day8Desc2">愛丁堡取車（租車4天）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day8Time3">15:00-16:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day8Desc3">駕車前往格拉斯哥（1小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day8Time4">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day8Desc4">格拉斯哥市區：喬治廣場→格拉斯哥大教堂</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day8Time5">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day8Desc5">格拉斯哥</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第9天 -->
-                <div class="day-card card" id="day-9">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day9Title">第9天｜8月5日（週三）｜格拉斯哥藝術科學</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day9Theme">大學城與博物館</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day9Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day9Desc1">格拉斯哥大學→Hunterian博物館</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day9Time2">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day9Desc2">凱文葛羅夫藝術博物館→河濱博物館</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day9Time3">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day9Desc3">格拉斯哥</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第10天 -->
-                <div class="day-card card" id="day-10">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day10Title">第10天｜8月6日（週四）｜格拉斯哥→湖區</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day10Theme">自駕前往湖區</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day10Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day10Desc1">格拉斯哥市區最後探索</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day10Time2">14:00-16:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day10Desc2">駕車前往湖區（2.5小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day10Time3">傍晚</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day10Desc3">湖區民宿入住</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day10Time4">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day10Desc4">湖區溫德米爾</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第11天 -->
-                <div class="day-card card" id="day-11">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day11Title">第11天｜8月7日（週五）｜湖區全日</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day11Theme">自駕小艇與湖光山色</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day11Time1">09:00-10:30</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day11Desc1">溫德米爾湖自駕小艇</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day11Time2">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day11Desc2">格拉斯米爾小鎮</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day11Time3">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day11Desc3">溫德米爾湖漫步→鮑內斯小鎮</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day11Time4">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day11Desc4">湖區</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第12天 -->
-                <div class="day-card card" id="day-12">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day12Title">第12天｜8月8日（週六）｜湖區→利物浦</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day12Theme">自駕前往利物浦</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day12Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day12Desc1">湖區最後探索</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day12Time2">12:00-14:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day12Desc2">駕車前往利物浦（2小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day12Time3">14:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day12Desc3">利物浦還車（租車結束）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day12Time4">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day12Desc4">阿爾伯特碼頭→披頭四故事館</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day12Time5">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day12Desc5">利物浦</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第13天 -->
-                <div class="day-card card" id="day-13">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day13Title">第13天｜8月9日（週日）｜利物浦全日</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day13Theme">披頭四與購物</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day13Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day13Desc1">洞穴俱樂部→The Cavern Pub</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day13Time2">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day13Desc2">利物浦博物館→阿爾伯特碼頭購物區</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day13Time3">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day13Desc3">利物浦</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第14天 -->
-                <div class="day-card card" id="day-14">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day14Title">第14天｜8月10日（週一）｜利物浦→切斯特</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day14Theme">羅馬古城</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day14Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day14Desc1">利物浦自由活動</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day14Time2">12:00-13:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day14Desc2">火車前往切斯特（1小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day14Time3">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day14Desc3">切斯特古城：城牆漫步→切斯特座堂</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day14Time4">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day14Desc4">切斯特</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第15天 -->
-                <div class="day-card card" id="day-15">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day15Title">第15天｜8月11日（週二）｜切斯特全日</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day15Theme">購物與羅馬遺跡</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day15Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day15Desc1">徹斯特奧克斯名品暢貨中心購物（巴士前往，20分鐘）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day15Time2">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day15Desc2">切斯特羅馬圓形劇場→The Rows獨特商店街</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day15Time3">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day15Desc3">切斯特</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第16天 -->
-                <div class="day-card card" id="day-16">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day16Title">第16天｜8月12日（週三）｜切斯特→曼徹斯特</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day16Theme">前往曼徹斯特</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day16Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day16Desc1">切斯特最後探索</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day16Time2">12:00-13:00</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day16Desc2">火車前往曼徹斯特（1小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day16Time3">下午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day16Desc3">曼徹斯特市區初探</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day16Time4">住宿</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day16Desc4">曼徹斯特</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 第17天 -->
-                <div class="day-card card" id="day-17">
-                    <div class="day-header">
-                        <h3 class="day-title editable" contenteditable="false" id="day17Title">第17天｜8月13日（週四）｜曼徹斯特→香港</h3>
-                        <span class="day-theme editable" contenteditable="false" id="day17Theme">回程</span>
-                    </div>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time1">上午</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc1">曼徹斯特最後遊覽：科學產業博物館→北區文藝區</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time2">14:00-14:20</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc2">前往曼徹斯特機場（火車，20分鐘）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time3">15:40前</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc3">辦理登機手續（起飛前3小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time4">18:40</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc4">航班LX381起飛（曼徹斯特→蘇黎世）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time5">21:40-22:40</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc5">蘇黎世轉機（1小時）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time6">22:40</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc6">航班LX138起飛（蘇黎世→香港）</span>
-                        </li>
-                        <li class="activity-item">
-                            <span class="activity-time editable" contenteditable="false" id="day17Time7">+1天16:40</span>
-                            <span class="activity-desc editable" contenteditable="false" id="day17Desc7">抵達香港國際機場</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-car"></i> 自駕階段詳情</span>
-                    <i class="fas fa-edit edit-icon" id="editDriving"></i>
-                </h2>
-                <div class="overview-grid">
-                    <div class="overview-item">
-                        <div class="overview-label">租車期間</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="drivingPeriod">8月4日14:00 - 8月8日14:00（4天）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">路線</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="drivingRoute">愛丁堡→格拉斯哥→湖區→利物浦</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">總里程</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="drivingDistance">約230英里（370公里）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">租車費用</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="drivingCost">£320總｜£107/人</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">預計油費</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="fuelCost">£100總｜£33/人</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">預計停車費</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="parkingCost">£40總｜£13/人</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-train"></i> 主要火車行程</span>
-                    <i class="fas fa-edit edit-icon" id="editTrains"></i>
-                </h2>
-                <table class="cost-table">
-                    <thead>
-                        <tr>
-                            <th>路線</th>
-                            <th>日期與時間</th>
-                            <th>費用</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="trainRoute1">利物浦→切斯特</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainTime1">8月10日 12:00-13:00（1小時）</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainCost1">£12總｜£4/人</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="trainRoute2">切斯特→曼徹斯特</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainTime2">8月12日 12:00-13:00（1小時）</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainCost2">£24總｜£8/人</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="trainRoute3">曼徹斯特市區→機場</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainTime3">8月13日 14:00-14:20（20分鐘）</span></td>
-                            <td><span class="editable" contenteditable="false" id="trainCost3">£4.9/人</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-pound-sign"></i> 3人預算總表</span>
-                    <i class="fas fa-edit edit-icon" id="editBudget"></i>
-                </h2>
-                <table class="cost-table">
-                    <thead>
-                        <tr>
-                            <th>項目</th>
-                            <th>總費用</th>
-                            <th>人均</th>
-                            <th>備註</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem1">高地三日團</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal1">£960</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson1">£320</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote1">已包含導覽、部分住宿</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem2">租車4天</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal2">£320</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson2">£107</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote2">含基本保險</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem3">主要火車票</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal3">£75</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson3">£25</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote3">需提前預訂</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem4">湖區自駕小艇</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal4">£70</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson4">£23</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote4">需預約</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem5">住宿16晚</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal5">£1,800</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson5">£600</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote5">平均£112.5/晚/房</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem6">餐飲預算</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal6">£1,150</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson6">£383</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote6">£22.5/人/天</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem7">門票活動</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal7">£250</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson7">£83</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote7">城堡、博物館等</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="editable" contenteditable="false" id="budgetItem8">購物預算</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetTotal8">£300</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetPerPerson8">£100</span></td>
-                            <td><span class="editable" contenteditable="false" id="budgetNote8">彈性</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="budget-total">
-                    <div class="budget-total-label" id="budgetTotalLabel">總預算（不含個人購物）</div>
-                    <div class="budget-total-value"><span class="editable" contenteditable="false" id="budgetTotalValue">£3,925 總｜£1,308/人</span></div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h2 class="card-title">
-                    <span><i class="fas fa-hotel"></i> 住宿分佈</span>
-                    <i class="fas fa-edit edit-icon" id="editAccommodation"></i>
-                </h2>
-                <div class="overview-grid">
-                    <div class="overview-item">
-                        <div class="overview-label">愛丁堡</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomEdinburgh">4晚（7/29-30, 8/2-3）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">高地/斯凱島</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomHighlands">2晚（7/31-8/1，團安排）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">格拉斯哥</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomGlasgow">2晚（8/4-5）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">湖區</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomLakeDistrict">2晚（8/6-7）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">利物浦</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomLiverpool">3晚（8/8-10）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">切斯特</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomChester">2晚（8/10-11）</span>
-                        </div>
-                    </div>
-                    <div class="overview-item">
-                        <div class="overview-label">曼徹斯特</div>
-                        <div class="overview-value">
-                            <span class="editable" contenteditable="false" id="accomManchester">1晚（8/12）</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+<button id="forceReset" onclick="if(confirm('確定清除所有數據並恢復預設裝備清單？')){localStorage.clear(); window.location.reload();}">⚠️ 強制重設</button>
+
+<div id="app" v-cloak>
+    <div v-if="!isInitialized" class="wizard-overlay">
+        <div class="wizard-content">
+            <i class="fa-solid fa-plane-departure" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2>Singapore Travel Pro</h2>
+            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">已預載 4月4日-4月8日 新加坡完整行程</p>
+            <span class="wizard-label">目的地城市</span>
+            <input v-model="config.dest" class="wizard-input">
+            <span class="wizard-label">出發日期</span>
+            <input type="date" v-model="config.startDate" class="wizard-input">
+            <span class="wizard-label">回程日期</span>
+            <input type="date" v-model="config.endDate" class="wizard-input">
+            <button class="wizard-btn" @click="finishWizard">進入我的新加坡之旅</button>
         </div>
-        
-        <div class="map-container">
-            <p><i class="fas fa-map"></i> 行程路線地圖：愛丁堡 → 蘇格蘭高地 → 格拉斯哥 → 湖區 → 利物浦 → 切斯特 → 曼徹斯特</p>
-        </div>
-        
-        <div class="footer">
-            <p>旅遊行程編輯器 | 英國17天行程 | 最後更新：<span id="lastUpdated">2026年7月</span></p>
-            <p>此行程可編輯、分享並導出為PDF文件</p>
-        </div>
-    </div>
-    
-    <!-- 分享模態框 -->
-    <div class="share-modal" id="shareModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">分享行程</h3>
-                <button class="close-modal" id="closeModal">&times;</button>
-            </div>
-            <p>將您的旅遊行程分享給朋友或家人：</p>
-            
-            <div class="share-options">
-                <div class="share-btn share-facebook" id="shareFacebook">
-                    <i class="fab fa-facebook-f"></i>
-                </div>
-                <div class="share-btn share-whatsapp" id="shareWhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </div>
-                <div class="share-btn share-link" id="shareLinkBtn">
-                    <i class="fas fa-link"></i>
-                </div>
-            </div>
-            
-            <div class="link-container">
-                <input type="text" id="shareable-link" readonly>
-                <button class="copy-link" id="copyLink">複製</button>
-            </div>
-            
-            <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-                <i class="fas fa-info-circle"></i> 此連結包含您編輯後的行程內容。當您修改行程後，請重新分享此連結以獲取最新版本。
-            </p>
-        </div>
-    </div>
-    
-    <!-- 通知 -->
-    <div class="notification" id="notification">
-        內容已保存！
-    </div>
-    
-    <!-- 數據狀態顯示 -->
-    <div class="data-status" id="dataStatus">
-        數據已加載
     </div>
 
-    <script>
-        // 行程數據存儲
-        let tripData = {
-            title: "英國17天行程",
-            subtitle: "2026年7月28日 - 8月13日",
-            overview: {
-                dates: "2026.07.28 - 08.13",
-                days: "17天16晚",
-                people: "3人",
-                transport: "飛機 + 火車 + 自駕",
-                route: "愛丁堡 → 蘇格蘭高地 → 格拉斯哥 → 湖區 → 利物浦 → 切斯特 → 曼徹斯特"
-            },
-            flights: {
-                outbound: {
-                    route1: "香港 → 蘇黎世",
-                    time1: "2026年7月28日 23:15 - 7月29日 06:15 (瑞士国际航空 LX139)",
-                    class1: "經濟艙基礎票價",
-                    route2: "蘇黎世 → 愛丁堡",
-                    time2: "2026年7月29日 07:30 - 08:40 (雪绒花航空 LX8290)",
-                    class2: "經濟艙基礎票價"
+    <div class="header" v-if="isInitialized">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 20px 5px 20px;">
+            <h2 style="margin:0; font-size:18px; color: var(--primary);">{{ config.dest }} Trip</h2>
+            <div @click="resetConfig" style="font-size: 11px; color: var(--secondary); cursor:pointer;">重設</div>
+        </div>
+        <div class="nav-switch">
+            <button class="nav-btn" :class="{active: view === 'plan'}" @click="view = 'plan'">🗓️ 行程</button>
+            <button class="nav-btn" :class="{active: view === 'cost'}" @click="view = 'cost'">💰 支出</button>
+            <button class="nav-btn" :class="{active: view === 'member'}" @click="view = 'member'">👥 旅伴</button>
+            <button class="nav-btn" :class="{active: view === 'pack'}" @click="view = 'pack'">🎒 行李</button>
+        </div>
+        <div v-if="view === 'plan'" class="day-tabs-wrapper">
+            <div v-for="(day, idx) in days" :key="'tab-'+idx" :class="['day-tab', currentDayIdx === idx ? 'active' : '']" @click="currentDayIdx = idx">
+                <span style="font-size:14px; font-weight:700;">Day {{ idx + 1 }}</span>
+                <span style="font-size:10px;">{{ getDayDate(idx) }}</span>
+            </div>
+            <div @click="addExtraDay" class="day-tab" style="background:none; border:1.5px dashed #ddd;"><i class="fa-solid fa-plus"></i></div>
+        </div>
+    </div>
+
+    <div v-if="view === 'plan' && isInitialized">
+        <div class="card" style="padding: 15px; margin-bottom: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div v-if="days[currentDayIdx]">
+                    <label style="font-size: 10px;">☀️ 當地預估天氣</label>
+                    <div style="font-weight:700; font-size:14px;">{{ weather.temp }}°C | 
+                        <input type="time" v-model="days[currentDayIdx].startTime" @change="autoReschedule" style="border:none; background:none; font-weight:700; color:var(--primary); width:75px; outline:none;">
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <label style="font-size: 10px;">今日總預算</label>
+                    <div style="font-weight:700; color:var(--accent);">HKD ${{ dailyTotalHKD }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding-bottom: 100px;">
+            <v-draggable :list="computedEvents" item-key="id" handle=".handle" @end="onDragEnd" :animation="200">
+                <template #item="{element, index}">
+                    <div class="event-wrapper">
+                        <div class="card event-card">
+                            <div @click.stop="element.done = !element.done; save()" style="padding-top: 5px; cursor:pointer;">
+                                <i :class="element.done ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'" :style="{color: element.done ? 'var(--primary)' : '#CFD8DC', fontSize:'24px'}"></i>
+                            </div>
+                            <div class="handle"><i :class="getCatIcon(element.category)"></i></div>
+                            <div class="card-main" @click="openEdit(index)">
+                                <span class="card-title">{{ element.title || '新行程' }}</span>
+                                <div class="card-meta">
+                                    <span style="color:var(--primary); font-weight:800;">{{ element.time }}</span>
+                                    <span v-if="element.cost > 0" style="color:var(--accent);">💰 ${{ safeConvertToHKD(element.cost, element.currency) }}</span>
+                                    <span v-if="element.paidBy" style="background: #f0f0f0; padding: 1px 4px; border-radius: 4px;">{{ element.paidBy }}</span>
+                                </div>
+                                <div class="info-box" v-if="element.note || element.url">
+                                    <div v-if="element.note">{{ element.note }}</div>
+                                    <a v-if="element.url" :href="element.url" target="_blank" class="card-link" @click.stop><i class="fa-solid fa-link"></i> 開啟網址</a>
+                                </div>
+                            </div>
+                            <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(element.title || '')" target="_blank" style="color:var(--primary); padding:10px;"><i class="fa-solid fa-location-arrow"></i></a>
+                        </div>
+                        <div v-if="index < computedEvents.length - 1" class="transport-divider">
+                            <span>{{ element.transTime || 0 }}m 交通</span>
+                            <a :href="'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(computedEvents[index].title) + '&destination=' + encodeURIComponent(computedEvents[index+1].title) + '&travelmode=transit'" target="_blank" class="btn-transit">🔍 導航</a>
+                        </div>
+                    </div>
+                </template>
+            </v-draggable>
+        </div>
+    </div>
+
+    <div v-if="view === 'cost' && isInitialized" style="padding: 15px;">
+        <div class="card" style="background: var(--primary); color: white; border: none; text-align:center;">
+            <div style="font-size: 12px; opacity: 0.8;">全旅程預算總支出</div>
+            <div style="font-size: 32px; font-weight: 800;">HKD ${{ grandTotalHKD }}</div>
+        </div>
+        <h4 style="margin: 20px 0 10px 15px;">📊 結算報告</h4>
+        <div class="card" style="padding: 10px;">
+            <div v-if="safeSettleReport.length === 0" style="text-align:center; padding:20px; color:var(--secondary);">✅ 帳目已清</div>
+            <div v-for="res in safeSettleReport" style="display:flex; justify-content:space-between; align-items:center; padding: 12px; border-bottom: 1px solid var(--divider);">
+                <span><b>{{ res.from }}</b> ➡️ <b>{{ res.to }}</b></span>
+                <span style="color:var(--primary); font-weight:bold;">HKD ${{ res.amount }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="view === 'member'" style="padding: 15px;">
+        <div class="card">
+            <h3>👥 旅伴成員管理</h3>
+            <div v-for="(m, i) in members" :key="'mem-'+i" style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--divider);">
+                <span>{{ m }}</span>
+                <i class="fa-solid fa-circle-xmark" @click="removeMember(i)" style="color:#FFAB91; cursor:pointer;" v-if="m !== '我'"></i>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <input v-model="newMemberName" placeholder="輸入名字..." style="margin:0;">
+                <button @click="addMember" style="background:var(--primary); color:white; border:none; padding:0 20px; border-radius:12px; font-weight:bold;">＋</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="view === 'pack'" style="padding: 15px;">
+        <div v-for="(group, catName) in groupedPacking" :key="'pack-cat-'+catName">
+            <div class="packing-category">{{ catName }}</div>
+            <div v-for="item in group" :key="item.id" class="card" style="padding:15px; margin-bottom:10px; display:flex; align-items:center;">
+                <i @click="togglePacking(item)" :class="item.done ? 'fa-solid fa-square-check' : 'fa-regular fa-square'" :style="{color: item.done ? 'var(--primary)' : '#CFD8DC', fontSize:'24px', marginRight:'15px'}"></i>
+                <span :style="{flex:1, textDecoration: item.done ? 'line-through' : 'none'}">{{ item.text }}</span>
+                <i class="fa-solid fa-trash" @click="removePackingItem(item.id)" style="color:#FFAB91; opacity:0.6;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" v-if="isInitialized">
+        <button class="btn btn-primary" @click="openAdd">＋ 新增行程 / 項目</button>
+        <button class="btn btn-secondary" @click="exportPDF"><i class="fa-solid fa-file-pdf"></i></button>
+    </div>
+
+    <div v-if="showModal" class="modal" @click.self="showModal = false">
+        <div class="modal-body">
+            <h3>行程詳情</h3>
+            <div class="icon-grid">
+                <div v-for="c in categories" :key="c.id" class="icon-opt" :class="{ 'selected': form.category === c.id }" @click="form.category = c.id"><i :class="c.icon"></i></div>
+            </div>
+            <input v-model="form.title" placeholder="景點名稱">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label style="font-size:10px;">時間</label><input type="time" v-model="form.time"></div>
+                <div style="flex:1"><label style="font-size:10px;">停留(分)</label><input type="number" v-model="form.duration"></div>
+            </div>
+            <input type="number" v-model="form.transTime" placeholder="交通至下站 (分鐘)">
+            <input v-model="form.url" placeholder="網址連結">
+            <textarea v-model="form.note" placeholder="詳細備註..."></textarea>
+            <button class="btn btn-primary" style="width:100%;" @click="saveEvent">儲存項目</button>
+            <div v-if="editingIdx !== null" @click="deleteEvent" style="color:red; text-align:center; margin-top:15px; font-size:12px; cursor:pointer;">🗑️ 刪除行程</div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBcaK3Bzs4IRIlnV3V3JEdlzpDBdCXhWKg",
+        authDomain: "travel-planner-6f08d.firebaseapp.com",
+        databaseURL: "https://travel-planner-6f08d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "travel-planner-6f08d",
+        storageBucket: "travel-planner-6f08d.firebasestorage.app",
+        messagingSenderId: "545387212656",
+        appId: "1:545387212656:web:8f67189deb55935e9529b5"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
+    const planRef = ref(db, 'master_v63_gear_plan'); 
+    const configRef = ref(db, 'config_v63');
+    const memberRef = ref(db, 'members_v63');
+    const packRef = ref(db, 'packing_v63');
+
+    const { createApp, ref: vRef, onMounted, computed, watch } = Vue;
+
+    const PRELOADED_PACKING = [
+        { cat: "1. 重要文件與財物", items: ["護照", "SIM 卡", "新幣現金", "信用卡"] },
+        { cat: "2. 攝影器材", items: ["FIMI 雲台相機", "Insta360", "行動電源"] },
+        { cat: "3. 衣物", items: ["夏裝", "薄外套 (室內冷氣強)", "泳衣 (聖淘沙用)"] }
+    ];
+
+    // --- 預載行程數據 ---
+    const SINGAPORE_ITINERARY = [
+        { // Day 1
+            city: "Singapore", startTime: "09:05",
+            events: [
+                { id:101, title: "飛機 SQ 899 (HKG -> SIN)", time: "09:05", duration: 230, transTime: 30, category: "flight", note: "09:05 香港起飛，12:55 抵達新加坡" },
+                { id:102, title: "星耀樟宜 Jewel (雨漩渦/森林谷)", time: "13:25", duration: 150, transTime: 40, category: "attraction", note: "打卡室內瀑布、5樓星空花園" },
+                { id:103, title: "酒店 Check-in / 休息", time: "16:35", duration: 60, transTime: 20, category: "hotel" },
+                { id:104, title: "牛車水 (Chinatown) + 佛牙寺", time: "17:55", duration: 120, transTime: 10, category: "attraction", note: "佛牙寺開放至18:00" },
+                { id:105, title: "晚餐 @ 詠春園 (Spring Court)", time: "20:05", duration: 120, transTime: 0, category: "food" }
+            ]
+        },
+        { // Day 2
+            city: "Singapore", startTime: "09:30",
+            events: [
+                { id:201, title: "小印度 (Little India) / 竹腳中心", time: "09:30", duration: 120, transTime: 20, category: "attraction" },
+                { id:202, title: "甘榜格南 / 蘇丹回教堂 / 午餐", time: "11:50", duration: 150, transTime: 10, category: "attraction", note: "午餐建議 Zam Zam 印度煎餅" },
+                { id:203, title: "哈芝巷 (Haji Lane) 文青打卡", time: "14:30", duration: 90, transTime: 30, category: "attraction" },
+                { id:204, title: "Bugis 逛逛 / 酒店休息", time: "16:30", duration: 120, transTime: 30, category: "hotel" },
+                { id:205, title: "克拉碼頭 (Clarke Quay) + 晚餐", time: "19:00", duration: 150, transTime: 0, category: "food" }
+            ]
+        },
+        { // Day 3
+            city: "Singapore", startTime: "09:30",
+            events: [
+                { id:301, title: "Skyline Luge 斜坡滑車", time: "09:30", duration: 180, transTime: 15, category: "attraction", note: "建議買4次套票" },
+                { id:302, title: "午餐 @ 聖淘沙名勝世界", time: "12:45", duration: 60, transTime: 15, category: "food" },
+                { id:303, title: "新加坡環球影城 (USS)", time: "14:00", duration: 300, transTime: 20, category: "attraction", note: "週一營業至19:00" },
+                { id:304, title: "晚餐 @ Vivo City", time: "19:20", duration: 120, transTime: 0, category: "food" }
+            ]
+        },
+        { // Day 4
+            city: "Singapore", startTime: "09:30",
+            events: [
+                { id:401, title: "濱海灣雲霧林 (Jurassic World)", time: "09:30", duration: 180, transTime: 15, category: "attraction", note: "機械恐龍體驗，水霧 10:00/12:00" },
+                { id:402, title: "午餐 @ 金沙商城", time: "12:45", duration: 90, transTime: 15, category: "food" },
+                { id:403, title: "花穹 (Flower Dome)", time: "14:30", duration: 120, transTime: 15, category: "attraction" },
+                { id:404, title: "超級樹 OCBC Skyway", time: "16:45", duration: 90, transTime: 20, category: "attraction" },
+                { id:405, title: "魚尾獅公園 Merlion Park", time: "18:35", duration: 90, transTime: 15, category: "attraction" },
+                { id:406, title: "快速晚餐", time: "20:20", duration: 40, transTime: 10, category: "food" },
+                { id:407, title: "超級樹燈光秀 (花園狂想曲)", time: "21:10", duration: 30, transTime: 15, category: "attraction", note: "躺在草地看秀" },
+                { id:408, title: "金沙燈光水舞秀 (Spectra)", time: "21:55", duration: 30, transTime: 0, category: "attraction" }
+            ]
+        },
+        { // Day 5
+            city: "Singapore", startTime: "09:00",
+            events: [
+                { id:501, title: "福康寧公園 (龍之穴樹洞)", time: "09:00", duration: 90, transTime: 20, category: "attraction" },
+                { id:502, title: "國家美術館 / 亞美尼亞街", time: "10:50", duration: 90, transTime: 20, category: "attraction" },
+                { id:503, title: "烏節路購物 + 紐頓午餐", time: "12:40", duration: 100, transTime: 20, category: "shopping" },
+                { id:504, title: "前往機場 / 星耀樟宜補完", time: "14:40", duration: 120, transTime: 15, category: "transport", note: "提前值機托運行李" },
+                { id:505, title: "機場主題花園 (蝴蝶園/夢幻花園)", time: "16:55", duration: 90, transTime: 30, category: "attraction" },
+                { id:506, title: "飛機 SQ 898 (SIN -> HKG)", time: "19:00", duration: 240, transTime: 0, category: "flight", note: "23:00 抵港" }
+            ]
+        }
+    ];
+
+    createApp({
+        components: { 'v-draggable': window.vuedraggable },
+        setup() {
+            const isInitialized = vRef(false);
+            const view = vRef('plan');
+            const days = vRef([]);
+            const config = vRef({ dest: 'Singapore', startDate: '2026-04-04', endDate: '2026-04-08', currency: 'HKD' });
+            const members = vRef(['我']);
+            const packingList = vRef([]);
+            const currentDayIdx = vRef(0);
+            const showModal = vRef(false);
+            const editingIdx = vRef(null);
+            const weather = vRef({ temp: '--' });
+            const rates = vRef({ "HKD":1, "SGD":5.8 }); 
+            const categories = [
+                { id:'attraction', icon:'fa-solid fa-camera' },
+                { id:'food', icon:'fa-solid fa-utensils' },
+                { id:'hotel', icon:'fa-solid fa-hotel' },
+                { id:'flight', icon:'fa-solid fa-plane' },
+                { id:'shopping', icon:'fa-solid fa-bag-shopping' },
+                { id:'transport', icon:'fa-solid fa-train' }
+            ];
+            const form = vRef({});
+            const newMemberName = vRef('');
+
+            onMounted(() => {
+                onValue(configRef, snap => { if(snap.val()) { config.value = snap.val(); isInitialized.value = true; } });
+                onValue(planRef, snap => { 
+                    const data = snap.val();
+                    if(data) {
+                        const rawArr = Array.isArray(data) ? data : Object.values(data);
+                        days.value = rawArr.map(d => ({ ...d, events: d.events ? (Array.isArray(d.events) ? d.events : Object.values(d.events)) : [] }));
+                    }
+                });
+                onValue(memberRef, snap => { if(snap.val()) members.value = snap.val(); });
+                onValue(packRef, snap => { if(snap.val()) packingList.value = snap.val(); });
+                fetchWeather();
+            });
+
+            const computedEvents = computed({
+                get: () => days.value[currentDayIdx.value]?.events || [],
+                set: (val) => { if(days.value[currentDayIdx.value]) days.value[currentDayIdx.value].events = val; }
+            });
+
+            const finishWizard = () => {
+                // 如果沒有數據，則注入預載行程
+                const prePack = []; 
+                PRELOADED_PACKING.forEach(g => g.items.forEach(it => prePack.push({ id: Math.random(), category: g.cat, text: it, done: false })));
+                
+                days.value = SINGAPORE_ITINERARY;
+                packingList.value = prePack;
+                
+                set(configRef, config.value);
+                set(planRef, SINGAPORE_ITINERARY);
+                set(memberRef, members.value);
+                set(packRef, prePack);
+                isInitialized.value = true;
+            };
+
+            const autoReschedule = () => {
+                const day = days.value[currentDayIdx.value]; if (!day) return;
+                const evs = Array.isArray(day.events) ? day.events : Object.values(day.events || {});
+                let cur = day.startTime || '09:00';
+                evs.forEach(ev => { 
+                    ev.time = cur; 
+                    cur = addMinutes(cur, (parseInt(ev.duration)||0)+(parseInt(ev.transTime)||0)); 
+                });
+                save();
+            };
+
+            const addMinutes = (t, m) => { 
+                let [h, min] = (t || "09:00").split(':').map(Number); 
+                let tot = h * 60 + min + m; 
+                return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`; 
+            };
+            
+            const save = () => set(planRef, JSON.parse(JSON.stringify(days.value)));
+
+            const fetchWeather = async () => {
+                const city = days.value[currentDayIdx.value]?.city || config.value.dest; if(!city) return;
+                try {
+                    const r = await fetch(`https://wttr.in/${city}?format=j1`);
+                    const d = await r.json(); weather.value.temp = d.current_condition[0].temp_C;
+                } catch(e) { weather.value.temp = '--'; }
+            };
+
+            watch(currentDayIdx, fetchWeather);
+
+            return { 
+                isInitialized, config, days, currentDayIdx, view, members, weather, showModal, editingIdx, form, categories, computedEvents, packingList, newMemberName,
+                finishWizard, autoReschedule, save, 
+                getDayDate: (i) => { let d = new Date(config.value.startDate); d.setDate(d.getDate() + i); return `${d.getDate()}/${d.getMonth() + 1}`; },
+                openAdd: () => {
+                    const d = days.value[currentDayIdx.value];
+                    let t = d ? d.startTime : '09:00';
+                    const evs = computedEvents.value;
+                    if(evs.length > 0) t = addMinutes(evs[evs.length-1].time, (parseInt(evs[evs.length-1].duration)||0)+(parseInt(evs[evs.length-1].transTime)||0));
+                    form.value = { title:'', time:t, duration:60, transTime:0, category:'attraction', cost:0, currency:'HKD', id: Date.now() };
+                    showModal.value = true;
                 },
-                inbound: {
-                    route1: "曼徹斯特 → 蘇黎世",
-                    time1: "2026年8月12日 18:40 - 21:40 (瑞士国际航空 LX381)",
-                    class1: "經濟艙基礎Plus票價",
-                    route2: "蘇黎世 → 香港",
-                    time2: "2026年8月12日 22:40 - 8月13日 16:40 (瑞士国际航空 LX138)",
-                    class2: "經濟艙基礎Plus票價"
-                }
-            },
-            days: {},
-            budget: {},
-            lastUpdated: new Date().toLocaleDateString('zh-Hant')
-        };
-        
-        // 天氣數據
-        const weatherData = [
-            { date: "7/28", day: "週二", location: "香港", icon: "fa-cloud-sun", temp: "30°C", desc: "多雲" },
-            { date: "7/29", day: "週三", location: "愛丁堡", icon: "fa-cloud-sun", temp: "16°C", desc: "多雲" },
-            { date: "7/30", day: "週四", location: "愛丁堡", icon: "fa-sun", temp: "18°C", desc: "晴" },
-            { date: "7/31", day: "週五", location: "高地", icon: "fa-cloud-rain", temp: "15°C", desc: "小雨" },
-            { date: "8/1", day: "週六", location: "斯凱島", icon: "fa-cloud-sun-rain", temp: "13°C", desc: "陣雨" },
-            { date: "8/2", day: "週日", location: "高地→愛丁堡", icon: "fa-cloud", temp: "14°C", desc: "多雲" },
-            { date: "8/3", day: "週一", location: "愛丁堡", icon: "fa-cloud-sun", temp: "17°C", desc: "多雲時晴" },
-            { date: "8/4", day: "週二", location: "愛丁堡→格拉斯哥", icon: "fa-cloud-sun", temp: "17°C", desc: "多雲時晴" },
-            { date: "8/5", day: "週三", location: "格拉斯哥", icon: "fa-sun", temp: "19°C", desc: "晴" },
-            { date: "8/6", day: "週四", location: "格拉斯哥→湖區", icon: "fa-cloud", temp: "16°C", desc: "多雲" },
-            { date: "8/7", day: "週五", location: "湖區", icon: "fa-cloud-rain", temp: "15°C", desc: "小雨" },
-            { date: "8/8", day: "週六", location: "湖區→利物浦", icon: "fa-cloud-sun", temp: "17°C", desc: "多雲" },
-            { date: "8/9", day: "週日", location: "利物浦", icon: "fa-sun", temp: "20°C", desc: "晴" },
-            { date: "8/10", day: "週一", location: "利物浦→切斯特", icon: "fa-cloud-sun", temp: "18°C", desc: "多雲時晴" },
-            { date: "8/11", day: "週二", location: "切斯特", icon: "fa-cloud-rain", temp: "16°C", desc: "陣雨" },
-            { date: "8/12", day: "週三", location: "切斯特→曼徹斯特", icon: "fa-cloud", temp: "17°C", desc: "多雲" },
-            { date: "8/13", day: "週四", location: "曼徹斯特", icon: "fa-cloud-sun", temp: "18°C", desc: "多雲時晴" }
-        ];
-        
-        // 編輯模式狀態
-        let isEditMode = false;
-        let editTimeout = null;
-        
-        // 獲取DOM元素
-        const toggleEditBtn = document.getElementById('toggleEditBtn');
-        const shareBtn = document.getElementById('shareBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const shareModal = document.getElementById('shareModal');
-        const closeModal = document.getElementById('closeModal');
-        const copyLinkBtn = document.getElementById('copyLink');
-        const shareableLink = document.getElementById('shareable-link');
-        const weatherContainer = document.getElementById('weatherContainer');
-        const lastUpdatedEl = document.getElementById('lastUpdated');
-        const notification = document.getElementById('notification');
-        const refreshWeatherBtn = document.getElementById('refreshWeather');
-        const dataStatus = document.getElementById('dataStatus');
-        
-        // 初始化頁面
-        function initPage() {
-            // 檢查URL參數並加載行程數據
-            checkUrlParams();
-            
-            // 渲染天氣預報
-            renderWeather();
-            
-            // 設置事件監聽器
-            setupEventListeners();
-            
-            // 生成分享連結
-            updateShareLink();
-            
-            // 顯示數據狀態
-            updateDataStatus();
+                saveEvent: () => {
+                    if(editingIdx.value !== null) computedEvents.value[editingIdx.value] = {...form.value};
+                    else computedEvents.value.push({...form.value});
+                    showModal.value = false; autoReschedule();
+                },
+                openEdit: (i) => { editingIdx.value = i; form.value = JSON.parse(JSON.stringify(computedEvents.value[i])); showModal.value = true; },
+                deleteEvent: () => { days.value[currentDayIdx.value].events.splice(editingIdx.value,1); autoReschedule(); showModal.value=false; },
+                onDragEnd: () => { autoReschedule(); },
+                addMember: () => { if(newMemberName.value) { members.value.push(newMemberName.value); newMemberName.value=''; set(memberRef, members.value); }},
+                removeMember: (i) => { if(members.value.length > 1) { members.value.splice(i,1); set(memberRef, members.value); } },
+                togglePacking: (it) => { it.done = !it.done; set(packRef, packingList.value); },
+                getCatIcon: (id) => { const c = categories.find(x => x.id === id); return c ? c.icon : 'fa-solid fa-map-pin'; },
+                safeConvertToHKD: (amt, cur) => (parseFloat(amt || 0) / (rates.value[cur] || 1)).toFixed(0),
+                dailyTotalHKD: computed(() => computedEvents.value.reduce((s, e) => s + (parseFloat(e.cost || 0) / (rates.value[e.currency] || 1)), 0).toFixed(0)),
+                grandTotalHKD: computed(() => days.value.reduce((total, day) => total + (day.events||[]).reduce((s, e) => s + (parseFloat(e.cost || 0) / (rates.value[e.currency] || 1)), 0), 0).toFixed(0)),
+                groupedPacking: computed(() => { const g = {}; packingList.value.forEach(it => { if(!g[it.category]) g[it.category] = []; g[it.category].push(it); }); return g; }),
+                safeSettleReport: computed(() => []), // 簡化邏輯供演示
+                exportPDF: () => window.print(),
+                resetConfig: () => { if(confirm("確定重設行程？資料將清空。")) { localStorage.clear(); set(configRef, null); location.reload(); } }
+            };
         }
-        
-        // 渲染天氣預報
-        function renderWeather() {
-            weatherContainer.innerHTML = '';
-            
-            weatherData.forEach(day => {
-                const weatherDay = document.createElement('div');
-                weatherDay.className = 'weather-day';
-                weatherDay.innerHTML = `
-                    <div class="weather-date">${day.date} ${day.day}</div>
-                    <div class="weather-location">${day.location}</div>
-                    <div class="weather-icon"><i class="fas ${day.icon}"></i></div>
-                    <div class="weather-temp">${day.temp}</div>
-                    <div class="weather-desc">${day.desc}</div>
-                `;
-                weatherContainer.appendChild(weatherDay);
-            });
-        }
-        
-        // 設置事件監聽器
-        function setupEventListeners() {
-            // 切換編輯模式
-            toggleEditBtn.addEventListener('click', toggleEditMode);
-            
-            // 分享按鈕
-            shareBtn.addEventListener('click', () => {
-                shareModal.style.display = 'flex';
-                updateShareLink();
-            });
-            
-            // 保存按鈕
-            saveBtn.addEventListener('click', function() {
-                saveDataToStorage();
-                showNotification('行程已保存到本地');
-            });
-            
-            // 關閉模態框
-            closeModal.addEventListener('click', () => {
-                shareModal.style.display = 'none';
-            });
-            
-            // 點擊模態框外部關閉
-            window.addEventListener('click', (e) => {
-                if (e.target === shareModal) {
-                    shareModal.style.display = 'none';
-                }
-            });
-            
-            // 複製連結
-            copyLinkBtn.addEventListener('click', copyShareLink);
-            
-            // 社交媒體分享
-            document.getElementById('shareFacebook').addEventListener('click', shareOnFacebook);
-            document.getElementById('shareWhatsApp').addEventListener('click', shareOnWhatsApp);
-            document.getElementById('shareLinkBtn').addEventListener('click', copyShareLink);
-            
-            // 導出PDF
-            exportBtn.addEventListener('click', exportToPDF);
-            
-            // 刷新天氣
-            refreshWeatherBtn.addEventListener('click', refreshWeather);
-            
-            // 編輯圖標點擊
-            document.querySelectorAll('.edit-icon').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    if (!isEditMode) {
-                        toggleEditMode();
-                        showNotification('已進入編輯模式');
-                    }
-                });
-            });
-            
-            // 內容編輯事件
-            document.addEventListener('input', handleContentEdit);
-            
-            // 頁面載入時自動保存數據狀態
-            window.addEventListener('load', function() {
-                updateDataStatus();
-            });
-            
-            // 頁面卸載前保存數據
-            window.addEventListener('beforeunload', function() {
-                saveDataToStorage();
-            });
-        }
-        
-        // 切換編輯模式
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            
-            // 切換所有可編輯元素的狀態
-            const editableElements = document.querySelectorAll('.editable, [contenteditable="true"]');
-            editableElements.forEach(el => {
-                el.contentEditable = isEditMode;
-                el.classList.toggle('edit-mode', isEditMode);
-            });
-            
-            // 更新按鈕文本
-            toggleEditBtn.innerHTML = isEditMode ? 
-                '<i class="fas fa-save"></i> 保存並退出編輯' : 
-                '<i class="fas fa-edit"></i> 編輯模式';
-            
-            // 切換按鈕顏色
-            toggleEditBtn.classList.toggle('btn-primary', isEditMode);
-            toggleEditBtn.classList.toggle('btn-edit', !isEditMode);
-            
-            if (!isEditMode) {
-                // 退出編輯模式時保存數據
-                saveDataToStorage();
-                showNotification('內容已保存');
-            }
-        }
-        
-        // 處理內容編輯
-        function handleContentEdit(e) {
-            if (!isEditMode) return;
-            
-            // 防抖動，減少頻繁保存
-            clearTimeout(editTimeout);
-            editTimeout = setTimeout(() => {
-                saveDataToStorage();
-                updateShareLink();
-            }, 1500);
-        }
-        
-        // 保存數據到本地存儲和數據對象
-        function saveDataToStorage() {
-            try {
-                // 收集所有可編輯的內容
-                const savedData = {
-                    title: document.getElementById('tripTitle').textContent,
-                    subtitle: document.getElementById('tripSubtitle').textContent,
-                    overview: {
-                        dates: document.getElementById('tripDates').textContent,
-                        days: document.getElementById('tripDays').textContent,
-                        people: document.getElementById('tripPeople').textContent,
-                        transport: document.getElementById('tripTransport').textContent,
-                        route: document.getElementById('tripRoute').textContent
-                    },
-                    flights: {
-                        outbound: {
-                            route1: document.getElementById('flightOutRoute1').textContent,
-                            time1: document.getElementById('flightOutTime1').textContent,
-                            class1: document.getElementById('flightOutClass1').textContent,
-                            route2: document.getElementById('flightOutRoute2').textContent,
-                            time2: document.getElementById('flightOutTime2').textContent,
-                            class2: document.getElementById('flightOutClass2').textContent
-                        },
-                        inbound: {
-                            route1: document.getElementById('flightInRoute1').textContent,
-                            time1: document.getElementById('flightInTime1').textContent,
-                            class1: document.getElementById('flightInClass1').textContent,
-                            route2: document.getElementById('flightInRoute2').textContent,
-                            time2: document.getElementById('flightInTime2').textContent,
-                            class2: document.getElementById('flightInClass2').textContent
-                        }
-                    },
-                    days: {},
-                    budget: {},
-                    driving: {
-                        period: document.getElementById('drivingPeriod').textContent,
-                        route: document.getElementById('drivingRoute').textContent,
-                        distance: document.getElementById('drivingDistance').textContent,
-                        cost: document.getElementById('drivingCost').textContent,
-                        fuel: document.getElementById('fuelCost').textContent,
-                        parking: document.getElementById('parkingCost').textContent
-                    },
-                    trains: {
-                        route1: document.getElementById('trainRoute1').textContent,
-                        time1: document.getElementById('trainTime1').textContent,
-                        cost1: document.getElementById('trainCost1').textContent,
-                        route2: document.getElementById('trainRoute2').textContent,
-                        time2: document.getElementById('trainTime2').textContent,
-                        cost2: document.getElementById('trainCost2').textContent,
-                        route3: document.getElementById('trainRoute3').textContent,
-                        time3: document.getElementById('trainTime3').textContent,
-                        cost3: document.getElementById('trainCost3').textContent
-                    },
-                    accommodation: {
-                        edinburgh: document.getElementById('accomEdinburgh').textContent,
-                        highlands: document.getElementById('accomHighlands').textContent,
-                        glasgow: document.getElementById('accomGlasgow').textContent,
-                        lakeDistrict: document.getElementById('accomLakeDistrict').textContent,
-                        liverpool: document.getElementById('accomLiverpool').textContent,
-                        chester: document.getElementById('accomChester').textContent,
-                        manchester: document.getElementById('accomManchester').textContent
-                    },
-                    budgetTotal: {
-                        label: document.getElementById('budgetTotalLabel').textContent,
-                        value: document.getElementById('budgetTotalValue').textContent
-                    },
-                    lastUpdated: new Date().toLocaleDateString('zh-Hant', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    })
-                };
-                
-                // 收集每日行程數據
-                for (let i = 1; i <= 17; i++) {
-                    const dayTitle = document.getElementById(`day${i}Title`);
-                    const dayTheme = document.getElementById(`day${i}Theme`);
-                    
-                    if (dayTitle && dayTheme) {
-                        savedData.days[`day${i}`] = {
-                            title: dayTitle.textContent,
-                            theme: dayTheme.textContent
-                        };
-                        
-                        // 收集活動項目
-                        let activityIndex = 1;
-                        while (true) {
-                            const timeEl = document.getElementById(`day${i}Time${activityIndex}`);
-                            const descEl = document.getElementById(`day${i}Desc${activityIndex}`);
-                            
-                            if (!timeEl || !descEl) break;
-                            
-                            savedData.days[`day${i}`][`activity${activityIndex}`] = {
-                                time: timeEl.textContent,
-                                desc: descEl.textContent
-                            };
-                            
-                            activityIndex++;
-                        }
-                    }
-                }
-                
-                // 收集預算數據
-                for (let i = 1; i <= 8; i++) {
-                    savedData.budget[`item${i}`] = {
-                        name: document.getElementById(`budgetItem${i}`).textContent,
-                        total: document.getElementById(`budgetTotal${i}`).textContent,
-                        perPerson: document.getElementById(`budgetPerPerson${i}`).textContent,
-                        note: document.getElementById(`budgetNote${i}`).textContent
-                    };
-                }
-                
-                // 保存到本地存儲
-                localStorage.setItem('tripData_v5', JSON.stringify(savedData));
-                
-                // 更新頁面顯示的最後修改時間
-                lastUpdatedEl.textContent = savedData.lastUpdated;
-                
-                // 更新tripData對象
-                tripData = savedData;
-                
-                // 更新數據狀態
-                updateDataStatus();
-                
-                console.log('數據已保存:', savedData);
-                return true;
-            } catch (error) {
-                console.error('保存數據時出錯:', error);
-                showNotification('保存失敗，請稍後再試');
-                return false;
-            }
-        }
-        
-        // 從本地存儲加載數據
-        function loadDataFromStorage() {
-            try {
-                const savedData = localStorage.getItem('tripData_v5');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    applyDataToPage(data);
-                    
-                    // 更新tripData對象
-                    tripData = data;
-                    
-                    showNotification('行程數據已載入');
-                    updateDataStatus();
-                    return true;
-                } else {
-                    // 嘗試載入舊版本數據
-                    const oldData = localStorage.getItem('tripData_v4') || localStorage.getItem('tripData_v3') || localStorage.getItem('tripData_v2') || localStorage.getItem('tripData');
-                    if (oldData) {
-                        const data = JSON.parse(oldData);
-                        applyDataToPage(data);
-                        tripData = data;
-                        showNotification('載入舊版本數據');
-                        updateDataStatus();
-                        return true;
-                    }
-                    showNotification('沒有找到保存的行程數據');
-                    return false;
-                }
-            } catch (e) {
-                console.error('無法載入行程數據:', e);
-                showNotification('載入失敗，請檢查數據格式');
-                return false;
-            }
-        }
-        
-        // 將數據應用到頁面
-        function applyDataToPage(data) {
-            // 應用基本數據
-            if (data.title) document.getElementById('tripTitle').textContent = data.title;
-            if (data.subtitle) document.getElementById('tripSubtitle').textContent = data.subtitle;
-            
-            if (data.overview) {
-                if (data.overview.dates) document.getElementById('tripDates').textContent = data.overview.dates;
-                if (data.overview.days) document.getElementById('tripDays').textContent = data.overview.days;
-                if (data.overview.people) document.getElementById('tripPeople').textContent = data.overview.people;
-                if (data.overview.transport) document.getElementById('tripTransport').textContent = data.overview.transport;
-                if (data.overview.route) document.getElementById('tripRoute').textContent = data.overview.route;
-            }
-            
-            if (data.lastUpdated) {
-                lastUpdatedEl.textContent = data.lastUpdated;
-            }
-            
-            // 應用航班信息
-            if (data.flights) {
-                if (data.flights.outbound) {
-                    if (data.flights.outbound.route1) document.getElementById('flightOutRoute1').textContent = data.flights.outbound.route1;
-                    if (data.flights.outbound.time1) document.getElementById('flightOutTime1').textContent = data.flights.outbound.time1;
-                    if (data.flights.outbound.class1) document.getElementById('flightOutClass1').textContent = data.flights.outbound.class1;
-                    if (data.flights.outbound.route2) document.getElementById('flightOutRoute2').textContent = data.flights.outbound.route2;
-                    if (data.flights.outbound.time2) document.getElementById('flightOutTime2').textContent = data.flights.outbound.time2;
-                    if (data.flights.outbound.class2) document.getElementById('flightOutClass2').textContent = data.flights.outbound.class2;
-                }
-                
-                if (data.flights.inbound) {
-                    if (data.flights.inbound.route1) document.getElementById('flightInRoute1').textContent = data.flights.inbound.route1;
-                    if (data.flights.inbound.time1) document.getElementById('flightInTime1').textContent = data.flights.inbound.time1;
-                    if (data.flights.inbound.class1) document.getElementById('flightInClass1').textContent = data.flights.inbound.class1;
-                    if (data.flights.inbound.route2) document.getElementById('flightInRoute2').textContent = data.flights.inbound.route2;
-                    if (data.flights.inbound.time2) document.getElementById('flightInTime2').textContent = data.flights.inbound.time2;
-                    if (data.flights.inbound.class2) document.getElementById('flightInClass2').textContent = data.flights.inbound.class2;
-                }
-            }
-            
-            // 應用每日行程
-            if (data.days) {
-                for (let i = 1; i <= 17; i++) {
-                    const dayKey = `day${i}`;
-                    if (data.days[dayKey]) {
-                        const day = data.days[dayKey];
-                        if (day.title) {
-                            const titleEl = document.getElementById(`${dayKey}Title`);
-                            if (titleEl) titleEl.textContent = day.title;
-                        }
-                        if (day.theme) {
-                            const themeEl = document.getElementById(`${dayKey}Theme`);
-                            if (themeEl) themeEl.textContent = day.theme;
-                        }
-                        
-                        // 應用活動項目
-                        let activityIndex = 1;
-                        while (true) {
-                            const activityKey = `activity${activityIndex}`;
-                            if (day[activityKey]) {
-                                const timeEl = document.getElementById(`${dayKey}Time${activityIndex}`);
-                                const descEl = document.getElementById(`${dayKey}Desc${activityIndex}`);
-                                
-                                if (timeEl && descEl) {
-                                    timeEl.textContent = day[activityKey].time;
-                                    descEl.textContent = day[activityKey].desc;
-                                }
-                            } else {
-                                break;
-                            }
-                            activityIndex++;
-                        }
-                    }
-                }
-            }
-            
-            // 應用其他數據
-            if (data.driving) {
-                if (data.driving.period) document.getElementById('drivingPeriod').textContent = data.driving.period;
-                if (data.driving.route) document.getElementById('drivingRoute').textContent = data.driving.route;
-                if (data.driving.distance) document.getElementById('drivingDistance').textContent = data.driving.distance;
-                if (data.driving.cost) document.getElementById('drivingCost').textContent = data.driving.cost;
-                if (data.driving.fuel) document.getElementById('fuelCost').textContent = data.driving.fuel;
-                if (data.driving.parking) document.getElementById('parkingCost').textContent = data.driving.parking;
-            }
-            
-            if (data.trains) {
-                if (data.trains.route1) document.getElementById('trainRoute1').textContent = data.trains.route1;
-                if (data.trains.time1) document.getElementById('trainTime1').textContent = data.trains.time1;
-                if (data.trains.cost1) document.getElementById('trainCost1').textContent = data.trains.cost1;
-                if (data.trains.route2) document.getElementById('trainRoute2').textContent = data.trains.route2;
-                if (data.trains.time2) document.getElementById('trainTime2').textContent = data.trains.time2;
-                if (data.trains.cost2) document.getElementById('trainCost2').textContent = data.trains.cost2;
-                if (data.trains.route3) document.getElementById('trainRoute3').textContent = data.trains.route3;
-                if (data.trains.time3) document.getElementById('trainTime3').textContent = data.trains.time3;
-                if (data.trains.cost3) document.getElementById('trainCost3').textContent = data.trains.cost3;
-            }
-            
-            if (data.budget) {
-                for (let i = 1; i <= 8; i++) {
-                    const budgetKey = `item${i}`;
-                    if (data.budget[budgetKey]) {
-                        const budgetItem = data.budget[budgetKey];
-                        if (budgetItem.name) document.getElementById(`budgetItem${i}`).textContent = budgetItem.name;
-                        if (budgetItem.total) document.getElementById(`budgetTotal${i}`).textContent = budgetItem.total;
-                        if (budgetItem.perPerson) document.getElementById(`budgetPerPerson${i}`).textContent = budgetItem.perPerson;
-                        if (budgetItem.note) document.getElementById(`budgetNote${i}`).textContent = budgetItem.note;
-                    }
-                }
-            }
-            
-            if (data.budgetTotal) {
-                if (data.budgetTotal.label) document.getElementById('budgetTotalLabel').textContent = data.budgetTotal.label;
-                if (data.budgetTotal.value) document.getElementById('budgetTotalValue').textContent = data.budgetTotal.value;
-            }
-            
-            if (data.accommodation) {
-                if (data.accommodation.edinburgh) document.getElementById('accomEdinburgh').textContent = data.accommodation.edinburgh;
-                if (data.accommodation.highlands) document.getElementById('accomHighlands').textContent = data.accommodation.highlands;
-                if (data.accommodation.glasgow) document.getElementById('accomGlasgow').textContent = data.accommodation.glasgow;
-                if (data.accommodation.lakeDistrict) document.getElementById('accomLakeDistrict').textContent = data.accommodation.lakeDistrict;
-                if (data.accommodation.liverpool) document.getElementById('accomLiverpool').textContent = data.accommodation.liverpool;
-                if (data.accommodation.chester) document.getElementById('accomChester').textContent = data.accommodation.chester;
-                if (data.accommodation.manchester) document.getElementById('accomManchester').textContent = data.accommodation.manchester;
-            }
-        }
-        
-        // 更新分享連結
-        function updateShareLink() {
-            try {
-                // 確保tripData是最新的
-                saveDataToStorage();
-                
-                // 創建包含行程數據的分享連結
-                const dataString = JSON.stringify(tripData);
-                const base64Data = btoa(unescape(encodeURIComponent(dataString)));
-                const currentUrl = window.location.href.split('?')[0];
-                const shareUrl = `${currentUrl}?trip=${base64Data}`;
-                
-                shareableLink.value = shareUrl;
-            } catch (error) {
-                console.error('更新分享連結時出錯:', error);
-                // 如果btoa失敗，使用encodeURIComponent
-                try {
-                    const dataString = encodeURIComponent(JSON.stringify(tripData));
-                    const currentUrl = window.location.href.split('?')[0];
-                    const shareUrl = `${currentUrl}?trip=${dataString}`;
-                    shareableLink.value = shareUrl;
-                } catch (e2) {
-                    shareableLink.value = window.location.href;
-                }
-            }
-        }
-        
-        // 檢查URL參數並加載行程數據
-        function checkUrlParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const tripParam = urlParams.get('trip');
-            
-            if (tripParam) {
-                try {
-                    // 嘗試解碼base64
-                    let sharedData;
-                    try {
-                        const decodedData = decodeURIComponent(escape(atob(tripParam)));
-                        sharedData = JSON.parse(decodedData);
-                    } catch (e1) {
-                        // 如果不是base64，嘗試直接解析
-                        sharedData = JSON.parse(decodeURIComponent(tripParam));
-                    }
-                    
-                    applyDataToPage(sharedData);
-                    
-                    // 保存到本地存儲
-                    localStorage.setItem('tripData_v5', JSON.stringify(sharedData));
-                    
-                    // 更新tripData對象
-                    tripData = sharedData;
-                    
-                    showNotification('已加載共享的行程數據');
-                    updateDataStatus();
-                } catch (e) {
-                    console.error('無法解析URL中的行程數據:', e);
-                    // 如果無法解析URL參數，嘗試從本地存儲加載
-                    loadDataFromStorage();
-                }
-            } else {
-                // 如果沒有URL參數，嘗試從本地存儲加載
-                loadDataFromStorage();
-            }
-        }
-        
-        // 複製分享連結
-        function copyShareLink() {
-            shareableLink.select();
-            shareableLink.setSelectionRange(0, 99999);
-            
-            try {
-                document.execCommand('copy');
-                const originalText = copyLinkBtn.textContent;
-                copyLinkBtn.textContent = '已複製!';
-                copyLinkBtn.style.backgroundColor = '#4CAF50';
-                
-                showNotification('連結已複製到剪貼簿');
-                
-                setTimeout(() => {
-                    copyLinkBtn.textContent = originalText;
-                    copyLinkBtn.style.backgroundColor = '#2a5298';
-                }, 2000);
-            } catch (err) {
-                // 使用現代 Clipboard API
-                navigator.clipboard.writeText(shareableLink.value).then(() => {
-                    const originalText = copyLinkBtn.textContent;
-                    copyLinkBtn.textContent = '已複製!';
-                    copyLinkBtn.style.backgroundColor = '#4CAF50';
-                    
-                    showNotification('連結已複製到剪貼簿');
-                    
-                    setTimeout(() => {
-                        copyLinkBtn.textContent = originalText;
-                        copyLinkBtn.style.backgroundColor = '#2a5298';
-                    }, 2000);
-                });
-            }
-        }
-        
-        // 分享到Facebook
-        function shareOnFacebook() {
-            const url = encodeURIComponent(shareableLink.value);
-            const text = encodeURIComponent(`查看我的英國旅遊行程：${tripData.title}`);
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
-        }
-        
-        // 分享到WhatsApp
-        function shareOnWhatsApp() {
-            const text = encodeURIComponent(`查看我的英國旅遊行程：${tripData.title}\n${shareableLink.value}`);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
-        }
-        
-        // PDF導出函數 - 使用html2canvas確保文字正確顯示，頁邊距0.5cm
-        async function exportToPDF() {
-            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在生成PDF...';
-            exportBtn.disabled = true;
-            
-            try {
-                // 臨時退出編輯模式以獲得更好的PDF效果
-                const wasEditMode = isEditMode;
-                if (wasEditMode) toggleEditMode();
-                
-                // 隱藏不需要的元素
-                const elementsToHide = document.querySelectorAll('.action-buttons, .edit-icon, .share-modal, .notification, .data-status, .footer, .map-container');
-                const originalDisplay = [];
-                elementsToHide.forEach(el => {
-                    originalDisplay.push({element: el, display: el.style.display});
-                    el.style.display = 'none';
-                });
-                
-                // 使用jsPDF
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                // 添加封面 - 使用0.5cm邊距（5mm）
-                pdf.setFillColor(30, 60, 114);
-                pdf.rect(5, 5, 200, 287, 'F'); // 0.5cm邊距
-                pdf.setTextColor(255, 255, 255);
-                pdf.setFontSize(28);
-                pdf.text("英國17天行程", 105, 120, { align: 'center' });
-                pdf.setFontSize(16);
-                pdf.text("2026年7月28日 - 8月13日", 105, 140, { align: 'center' });
-                pdf.setFontSize(12);
-                pdf.text(`最後更新: ${tripData.lastUpdated}`, 105, 160, { align: 'center' });
-                pdf.setTextColor(255, 126, 95);
-                pdf.text("旅遊行程計劃", 105, 180, { align: 'center' });
-                pdf.addPage();
-                
-                // 獲取所有卡片
-                const cards = document.querySelectorAll('.card');
-                
-                // 為每張卡片創建PDF頁面
-                for (let i = 0; i < cards.length; i++) {
-                    const card = cards[i];
-                    
-                    // 跳過已經處理過的卡片類型
-                    if (i > 0 && cards[i-1] && cards[i-1].classList.contains('day-card')) {
-                        continue;
-                    }
-                    
-                    // 新頁面
-                    if (i > 0) pdf.addPage();
-                    
-                    // 使用html2canvas捕獲卡片
-                    const canvas = await html2canvas(card, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        backgroundColor: '#ffffff',
-                        onclone: function(clonedDoc) {
-                            // 在克隆的文檔中設置字體
-                            clonedDoc.body.style.fontFamily = "'Microsoft JhengHei', 'Segoe UI', sans-serif";
-                        }
-                    });
-                    
-                    const img = canvas.toDataURL('image/jpeg', 0.9);
-                    const imgWidth = 200; // A4寬度減去0.5cm邊距*2
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    
-                    // 檢查圖片高度是否會超出頁面
-                    const maxHeight = 287; // A4高度減去0.5cm邊距*2
-                    let finalHeight = imgHeight;
-                    let finalWidth = imgWidth;
-                    
-                    if (imgHeight > maxHeight) {
-                        finalHeight = maxHeight;
-                        finalWidth = (canvas.width * maxHeight) / canvas.height;
-                    }
-                    
-                    // 居中顯示
-                    const x = (210 - finalWidth) / 2;
-                    const y = (297 - finalHeight) / 2;
-                    
-                    pdf.addImage(img, 'JPEG', x, y, finalWidth, finalHeight);
-                    
-                    // 添加頁碼
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(100, 100, 100);
-                    pdf.text(`第 ${i+2} 頁`, 200, 292, { align: 'right' });
-                }
-                
-                // 為每一天創建一個PDF頁面
-                const dayCards = document.querySelectorAll('.day-card');
-                for (let i = 0; i < dayCards.length; i++) {
-                    const dayCard = dayCards[i];
-                    
-                    // 新頁面
-                    pdf.addPage();
-                    
-                    // 使用html2canvas捕獲每日行程卡片
-                    const canvas = await html2canvas(dayCard, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        backgroundColor: '#ffffff',
-                        onclone: function(clonedDoc) {
-                            // 在克隆的文檔中設置字體
-                            clonedDoc.body.style.fontFamily = "'Microsoft JhengHei', 'Segoe UI', sans-serif";
-                        }
-                    });
-                    
-                    const dayImg = canvas.toDataURL('image/jpeg', 0.9);
-                    const dayWidth = 200; // A4寬度減去0.5cm邊距*2
-                    const dayHeight = (canvas.height * dayWidth) / canvas.width;
-                    
-                    // 檢查圖片高度是否會超出頁面
-                    const maxHeight = 287; // A4高度減去0.5cm邊距*2
-                    let finalDayHeight = dayHeight;
-                    let finalDayWidth = dayWidth;
-                    
-                    if (dayHeight > maxHeight) {
-                        finalDayHeight = maxHeight;
-                        finalDayWidth = (canvas.width * maxHeight) / canvas.height;
-                    }
-                    
-                    // 居中顯示
-                    const x = (210 - finalDayWidth) / 2;
-                    const y = (297 - finalDayHeight) / 2;
-                    
-                    pdf.addImage(dayImg, 'JPEG', x, y, finalDayWidth, finalDayHeight);
-                    
-                    // 添加頁碼
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(100, 100, 100);
-                    pdf.text(`第 ${cards.length + i + 2} 頁`, 200, 292, { align: 'right' });
-                }
-                
-                // 恢復隱藏的元素
-                elementsToHide.forEach((el, index) => {
-                    el.style.display = originalDisplay[index].display;
-                });
-                
-                // 恢復編輯模式
-                if (wasEditMode) toggleEditMode();
-                
-                // 保存PDF
-                const fileName = `英國17天行程-${new Date().toISOString().split('T')[0]}.pdf`;
-                pdf.save(fileName);
-                
-                exportBtn.innerHTML = '<i class="fas fa-file-pdf"></i> 導出PDF';
-                exportBtn.disabled = false;
-                
-                showNotification('PDF已成功導出，共' + (cards.length + dayCards.length + 1) + '頁');
-                
-            } catch (error) {
-                console.error('PDF生成錯誤:', error);
-                
-                // 嘗試簡單的備份方法
-                try {
-                    // 使用瀏覽器打印功能
-                    const printContent = document.querySelector('.container').cloneNode(true);
-                    
-                    // 移除不需要的元素
-                    const elementsToRemove = printContent.querySelectorAll('.action-buttons, .edit-icon, .share-modal, .notification, .data-status, .footer, .map-container');
-                    elementsToRemove.forEach(el => el.remove());
-                    
-                    // 設置打印樣式
-                    const printWindow = window.open('', '_blank');
-                    printWindow.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>英國17天行程</title>
-                            <style>
-                                @page {
-                                    margin: 0.5cm !important;
-                                }
-                                body { 
-                                    font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif; 
-                                    margin: 0; 
-                                    padding: 0;
-                                }
-                                .container {
-                                    width: 100%;
-                                    padding: 0;
-                                }
-                                .card { 
-                                    page-break-inside: avoid; 
-                                    margin-bottom: 15px; 
-                                    border: 1px solid #ddd; 
-                                    padding: 15px;
-                                    border-radius: 5px;
-                                }
-                                .day-card { 
-                                    page-break-after: always !important;
-                                }
-                                @media print {
-                                    .card { 
-                                        box-shadow: none !important; 
-                                        border: 1px solid #ddd !important;
-                                    }
-                                    .day-card {
-                                        page-break-after: always !important;
-                                    }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            ${printContent.innerHTML}
-                        </body>
-                        </html>
-                    `);
-                    
-                    printWindow.document.close();
-                    printWindow.focus();
-                    
-                    // 延遲打印以確保內容加載
-                    setTimeout(() => {
-                        printWindow.print();
-                        setTimeout(() => {
-                            printWindow.close();
-                        }, 1000);
-                    }, 500);
-                    
-                    showNotification('正在準備打印...');
-                } catch (simpleError) {
-                    console.error('打印錯誤:', simpleError);
-                    alert('PDF導出失敗，但您可以使用瀏覽器的打印功能（Ctrl+P）來保存行程。');
-                }
-                
-                exportBtn.innerHTML = '<i class="fas fa-file-pdf"></i> 導出PDF';
-                exportBtn.disabled = false;
-                
-                // 恢復編輯模式
-                if (isEditMode) toggleEditMode();
-            }
-        }
-        
-        // 刷新天氣預報
-        function refreshWeather() {
-            showNotification('正在更新天氣預報...');
-            
-            setTimeout(() => {
-                weatherData.forEach(day => {
-                    const currentTemp = parseInt(day.temp);
-                    const newTemp = Math.max(10, Math.min(25, currentTemp + Math.floor(Math.random() * 5) - 2));
-                    day.temp = `${newTemp}°C`;
-                    
-                    const conditions = ['晴', '多雲', '多雲時晴', '小雨', '陣雨', '多雲偶雨'];
-                    day.desc = conditions[Math.floor(Math.random() * conditions.length)];
-                    
-                    if (day.desc === '晴') day.icon = 'fa-sun';
-                    else if (day.desc.includes('雨')) day.icon = 'fa-cloud-rain';
-                    else if (day.desc === '多雲') day.icon = 'fa-cloud';
-                    else day.icon = 'fa-cloud-sun';
-                });
-                
-                renderWeather();
-                showNotification('天氣預報已更新');
-            }, 1000);
-        }
-        
-        // 顯示通知
-        function showNotification(message) {
-            notification.textContent = message;
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-        
-        // 更新數據狀態顯示
-        function updateDataStatus() {
-            const hasData = localStorage.getItem('tripData_v5') || localStorage.getItem('tripData_v4') || localStorage.getItem('tripData_v3') || localStorage.getItem('tripData_v2') || localStorage.getItem('tripData');
-            dataStatus.textContent = hasData ? `數據已保存 (${tripData.lastUpdated})` : '無保存數據';
-            dataStatus.style.backgroundColor = hasData ? '#4CAF50' : '#ff7e5f';
-        }
-        
-        // 添加一些互動效果
-        document.querySelectorAll('.day-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.05)';
-            });
-        });
-        
-        // 初始化頁面
-        document.addEventListener('DOMContentLoaded', function() {
-            initPage();
-        });
-    </script>
+    }).mount('#app');
+</script>
 </body>
 </html>
