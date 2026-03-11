@@ -85,7 +85,7 @@
         <div class="wizard-content">
             <i class="fa-solid fa-plane-departure" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
             <h2>Travel Master Pro v63</h2>
-            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">已預載新加坡終極行程與詳細行李清單</p>
+            <p style="font-size: 14px; color: var(--secondary); margin-bottom: 20px;">已預載新加坡終極行程、宜必思酒店起點與完整行李清單</p>
             <span class="wizard-label">目的地城市</span>
             <input v-model="config.dest" class="wizard-input">
             <span class="wizard-label">出發日期</span>
@@ -278,7 +278,7 @@
 
     const { createApp, ref: vRef, onMounted, computed, watch } = Vue;
 
-    // 8 大類完整行李清單
+    // 8 大類完整行李清單預載
     const PRELOADED_PACKING = [
         { cat: "1. 重要文件與財物", items: ["錢包 (本地 / 外幣)", "信用卡", "身分證", "護照 / 簽證", "駕駛執照 (本地 / 國際)", "旅遊保險", "行程表", "登機證", "酒店預約確認", "住址證明", "藥物過敏紀錄", "SIM 卡", "海外提款功能"] },
         { cat: "2. 攝影器材", items: ["FIMI 雲台相機 (含充電器、腳架、收音咪)", "Insta360 全景相機 (含充電器、電池、自拍棒、腳架、轉接器、收音咪)", "航拍機"] },
@@ -290,34 +290,34 @@
         { cat: "8. 其他生活用品", items: ["雨傘", "電熱水壺", "行李秤", "掛頸繩", "零食"] }
     ];
 
-    // 新加坡 4/4 - 4/8 終極行程數據
+    // 新加坡 4/4 - 4/8 終極行程數據 (優化版：提早出發 + 酒店起終點 + 膳食)
     const SINGAPORE_MASTER_DATA = [
         { city: "Singapore", startTime: "09:05", events: [
             { id:101, title:"飛機 SQ 899 (HKG->SIN)", time:"09:05", duration:230, transTime:30, category:"flight", note:"香港起飛" },
             { id:102, title:"星耀樟宜 Jewel + 午餐", time:"13:25", duration:150, transTime:40, category:"attraction", note:"打卡雨漩渦 (Rain Vortex)、森林谷" },
-            { id:103, title:"新加坡明古連街宜必思酒店 (入住)", time:"16:35", duration:60, transTime:20, category:"hotel", note:"Ibis Singapore on Bencoolen" },
+            { id:103, title:"新加坡明古連街宜必思酒店 (入住)", time:"16:35", duration:60, transTime:20, category:"hotel" },
             { id:104, title:"牛車水 Chinatown + 佛牙寺", time:"17:55", duration:90, transTime:15, category:"attraction", note:"佛牙寺開放至18:00" },
             { id:105, title:"懷舊晚餐 @ 詠春園 (Spring Court)", time:"19:40", duration:120, transTime:20, category:"food" },
-            { id:106, title:"新加坡明古連街宜必思酒店 (休息)", time:"21:40", duration:60, transTime:0, category:"hotel" }
+            { id:106, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"21:40", duration:60, transTime:0, category:"hotel" }
         ]},
         { city: "Singapore", startTime: "08:30", events: [
-            { id:201, title:"由酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
+            { id:201, title:"由新加坡明古連街宜必思酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
             { id:202, title:"小印度 Little India 色彩之旅", time:"09:50", duration:120, transTime:15, category:"attraction", note:"漫步香料街區、竹腳中心" },
             { id:203, title:"甘榜格南 + 午餐 (Zam Zam)", time:"12:05", duration:120, transTime:10, category:"attraction", note:"參觀蘇丹回教堂" },
             { id:204, title:"哈芝巷 Haji Lane 文青打卡", time:"14:15", duration:90, transTime:30, category:"attraction" },
             { id:205, title:"克拉碼頭 (日落) + 晚餐", time:"17:15", duration:150, transTime:20, category:"food" },
-            { id:206, title:"新加坡明古連街宜必思酒店 (休息)", time:"20:45", duration:60, transTime:0, category:"hotel" }
+            { id:206, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"20:45", duration:60, transTime:0, category:"hotel" }
         ]},
         { city: "Singapore", startTime: "08:00", events: [
-            { id:301, title:"由酒店出發 + 早餐", time:"08:00", duration:60, transTime:40, category:"transport" },
+            { id:301, title:"由新加坡明古連街宜必思酒店出發 + 早餐", time:"08:00", duration:60, transTime:40, category:"transport" },
             { id:302, title:"聖淘沙 Skyline Luge 滑車", time:"10:00", duration:150, transTime:15, category:"attraction", note:"10:00開門，建議玩4次套票" },
             { id:303, title:"午餐 @ 聖淘沙名勝世界", time:"12:45", duration:60, transTime:15, category:"food" },
             { id:304, title:"新加坡環球影城 (USS)", time:"14:00", duration:300, transTime:20, category:"attraction", note:"玩到19:00" },
             { id:305, title:"晚餐 @ Vivo City", time:"19:20", duration:120, transTime:30, category:"food" },
-            { id:306, title:"新加坡明古連街宜必思酒店 (休息)", time:"21:30", duration:60, transTime:0, category:"hotel" }
+            { id:306, title:"返回新加坡明古連街宜必思酒店 (休息)", time:"21:30", duration:60, transTime:0, category:"hotel" }
         ]},
         { city: "Singapore", startTime: "08:30", events: [
-            { id:401, title:"由酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
+            { id:401, title:"由新加坡明古連街宜必思酒店出發 + 早餐", time:"08:30", duration:60, transTime:20, category:"transport" },
             { id:402, title:"雲霧林 (侏羅紀世界體驗)", time:"09:50", duration:150, transTime:15, category:"attraction", note:"打卡水霧時間" },
             { id:403, title:"午餐 @ 金沙美食廣場", time:"12:35", duration:75, transTime:15, category:"food" },
             { id:404, title:"花穹 Flower Dome", time:"14:05", duration:120, transTime:20, category:"attraction" },
@@ -327,12 +327,13 @@
             { id:408, title:"Spectra 金沙水舞秀 + 回酒店", time:"21:35", duration:60, transTime:0, category:"hotel" }
         ]},
         { city: "Singapore", startTime: "08:00", events: [
-            { id:501, title:"由酒店出發 + 早餐", time:"08:00", duration:60, transTime:20, category:"transport" },
+            { id:501, title:"由新加坡明古連街宜必思酒店出發 + 早餐", time:"08:00", duration:60, transTime:20, category:"transport" },
             { id:502, title:"福康寧公園 (龍之穴樹洞)", time:"09:20", duration:90, transTime:20, category:"attraction" },
             { id:503, title:"烏節路最後購物 + 午餐", time:"11:30", duration:120, transTime:30, category:"shopping" },
             { id:504, title:"Bugis Street 最後採購", time:"14:00", duration:60, transTime:20, category:"shopping" },
             { id:505, title:"抵達機場 / 星耀樟宜補完", time: "15:20", duration:120, transTime:20, category:"transport", note:"買班蘭蛋糕、鹹蛋魚皮" },
-            { id:506, title:"起飛返港 (SQ 898)", time: "19:00", duration:240, transTime:0, category:"flight", note:"預計23:00抵港" }
+            { id:506, title:"樟宜機場主題花園補完", time: "17:40", duration:60, transTime:20, category:"attraction" },
+            { id:507, title:"起飛返港 (SQ 898)", time: "19:00", duration:240, transTime:0, category:"flight", note:"預計23:00抵港" }
         ]}
     ];
 
